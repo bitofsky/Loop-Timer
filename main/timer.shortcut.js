@@ -9,9 +9,10 @@ exports.initShortcut = () => {
 exports.affectShortcut = () => {
     electron_1.globalShortcut.unregisterAll();
     const shortcut = timer_1.getConfig('shortcut');
-    const startShortcut = [shortcut.start.prefix, shortcut.start.key].filter(x => x).join('+');
-    const stopShortcut = [shortcut.stop.prefix, shortcut.stop.key].filter(x => x).join('+');
-    electron_1.globalShortcut.register(startShortcut, timer_1.start);
-    electron_1.globalShortcut.register(stopShortcut, timer_1.stop);
+    Object.keys(shortcut).forEach(type => {
+        const accelerator = [shortcut[type].prefix, shortcut[type].key].filter(x => x).join('+');
+        const event = timer_1.ShortcutEvents[type];
+        electron_1.globalShortcut.register(accelerator, event);
+    });
 };
 //# sourceMappingURL=timer.shortcut.js.map

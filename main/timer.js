@@ -7,26 +7,6 @@ const ElectronConfig = require('electron-config');
 let mainWindow;
 let oIntervalTimer;
 let cycle = 0;
-exports.Config = new ElectronConfig({
-    defaults: {
-        progressbar: {
-            show: true,
-            draggable: true,
-            x: 0,
-            y: 0
-        },
-        shortcut: {
-            start: {
-                prefix: 'CmdOrCtrl',
-                key: '1'
-            },
-            stop: {
-                prefix: 'CmdOrCtrl',
-                key: '2'
-            }
-        }
-    }
-});
 exports.sendMainWindow = (channel, ...args) => {
     if (!mainWindow)
         return;
@@ -73,4 +53,25 @@ exports.stop = () => {
     timer_progressbar_1.removeProgressbar();
 };
 exports.isActive = () => !!oIntervalTimer;
+exports.Config = new ElectronConfig({
+    defaults: {
+        progressbar: {
+            show: true,
+            draggable: true,
+            x: 0,
+            y: 0
+        },
+        shortcut: {
+            start: {
+                prefix: 'CmdOrCtrl',
+                key: '1'
+            },
+            stop: {
+                prefix: 'CmdOrCtrl',
+                key: '2'
+            }
+        }
+    }
+});
+exports.ShortcutEvents = { start: exports.start, stop: exports.stop };
 //# sourceMappingURL=timer.js.map

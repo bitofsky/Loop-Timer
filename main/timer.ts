@@ -8,27 +8,6 @@ let mainWindow: Electron.BrowserWindow | null;
 let oIntervalTimer: NodeJS.Timer | null;
 let cycle = 0;
 
-export const Config = new ElectronConfig({
-    defaults: {
-        progressbar: {
-            show: true,
-            draggable: true,
-            x: 0,
-            y: 0
-        },
-        shortcut: {
-            start: {
-                prefix: 'CmdOrCtrl',
-                key: '1'
-            },
-            stop: {
-                prefix: 'CmdOrCtrl',
-                key: '2'
-            }
-        }
-    }
-});
-
 export const sendMainWindow = (channel: string, ...args: any[]) => {
     if (!mainWindow) return;
     mainWindow.webContents.send(channel, ...args);
@@ -91,3 +70,26 @@ export const stop = () => {
 };
 
 export const isActive = () => !!oIntervalTimer;
+
+export const Config = new ElectronConfig({
+    defaults: {
+        progressbar: {
+            show: true,
+            draggable: true,
+            x: 0,
+            y: 0
+        },
+        shortcut: {
+            start: {
+                prefix: 'CmdOrCtrl',
+                key: '1'
+            },
+            stop: {
+                prefix: 'CmdOrCtrl',
+                key: '2'
+            }
+        }
+    }
+});
+
+export const ShortcutEvents = { start, stop };
