@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>BarWindow</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script>
+        window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
+    </script>
+
+    <style>
+        BODY {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .progressbar {
+            /* Reset the default appearance */
+            -webkit-appearance: none;
+            appearance: none;
+            width: 0px;
+            height: 0px;
+        }
+        
+        .progressbar {
+            background-color: #eee;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
+        }
+        
+        .progressbar .progressbar-value {
+            background-image: -webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)), -webkit-linear-gradient(left, #09c, #09f);
+            background-size: 35px 20px, 100% 100%, 100% 100%;
+            -webkit-transition: width 1s;
+            transition: width 1s;
+        }
+        
+        .progressbar.active .progressbar-value {
+            background-image: -webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)), -webkit-linear-gradient(left, yellow, #f44);
+            background-size: 35px 20px, 100% 100%, 100% 100%;
+            -webkit-transition: width 1s;
+            transition: width 1s;
+        }
+    </style>
+
+</head>
+
+<body class="draggable">
+    <div class="progressbar">
+        <div class="progressbar-value">
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    const { ipcRenderer } = require('electron');
+
+    const $window = $(window);
+    const $body = $('BODY');
+    const $progress = $('.progressbar');
+    const $progressValue = $('.progressbar > .progressbar-value');
+    const setDraggable = () => {
+        $body.css('-webkit-app-region', ipcRenderer.sendSync('getConfig', 'progressbar.draggable') ? 'drag' : 'no-drag');
+    };
+
+    let width = 0;
+    let height = 0;
+
+    const setSize = () => {
+        width = $window.width();
+        height = $window.height();
+
+        $progress.css({ width, height })
+        $progressValue.css({ width: 0, height });
+    };
+
+    setSize();
+    setDraggable();
+
+    $window.on('resize', setSize);
+    $window.on('contextmenu', e => e.preventDefault());
+    ipcRenderer.on('timer-notify', (event, cycle) => {
+        if (cycle < 4) {
+            $progress.addClass('active');
+            $progressValue.width(width * (cycle / 3));
+        }
+        else {
+            $progress.removeClass('active');
+            $progressValue.width(width * ((cycle - 4) / 11));
+            /*
+            $progress.attr({
+                max: 11,
+                value: cycle - 4
+            });
+            */
+        }
+    });
+
+</script>

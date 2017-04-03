@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Loop Timer</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Timer App for Diablo3 - Convention of elements" />
+
+    <link rel="stylesheet" href="../../node_modules/winstrap/dist/css/winstrap.min.css" />
+    <link rel="stylesheet" href="../css/font-awesome.min.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+
+    <script>window.$ = window.jQuery = require('../../node_modules/jquery/dist/jquery.min.js');</script>
+    <script src="../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script>
+    const Root = require('path').resolve(__dirname);
+    const Package = require('../../package.json');
+    </script>
+    
+</head>
+
+<body>
+
+    <TopNavigation></TopNavigation>
+
+    <MainContainer></MainContainer>
+
+</body>
+
+</html>
+<script>
+try{ require('../lib/Display.js').Body(); }catch(e) { alert(e.message || e); }
+</script>

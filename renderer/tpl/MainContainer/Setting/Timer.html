@@ -1,0 +1,58 @@
+<div class="container">
+
+    <div class="form-group">
+        <p class="form-group-label">Countdown <span id="countdownNotify">0</span></p>
+        <audio controls class="cycleAudio">
+            <source src="../sound/cycle1.mp3" type="audio/mpeg">
+        </audio>
+
+        <audio controls class="cycleAudio">
+            <source src="../sound/cycle2.mp3" type="audio/mpeg">
+        </audio>
+
+        <audio controls class="cycleAudio">
+            <source src="../sound/cycle3.mp3" type="audio/mpeg">
+        </audio>
+
+        <audio controls class="cycleAudio">
+            <source src="../sound/cycle4.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <hr/>
+
+    <div class="form-group col-xs-24" style="margin-bottom:0;">
+        <p class="form-group-label">Progress Bar</p>
+        <div class="col-xs-12">
+            <div class="checkbox" style="margin-bottom:0;">
+                <label><input type="checkbox" checked id="progressbarShow"><span>Show</span></label>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="checkbox" style="margin-bottom:0;">
+                <label><input type="checkbox" checked id="progressbarDraggable"><span>Draggable</span></label>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group col-xs-24" style="margin-bottom:0;">
+        <p class="form-group-label">Position</p>
+        <div class="col-xs-24" style="margin-top:22px;">
+            <div class="col-xs-10">
+                <input type="number" class="form-control" id="progressbarX" min="0" placeholder="X" readonly>
+            </div>
+            <div class="col-xs-10">
+                <input type="number" class="form-control" id="progressbarY" min="0" placeholder="Y" readonly>
+            </div>
+            <div class="col-xs-4">
+                <span class="glyph glyph-refresh" aria-hidden="true" id="progressbarReset" style="cursor: pointer;"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-24" style="text-align: center;">
+        <a class="btn btn-primary" id="countdownStart">Start</a>
+        <a class="btn btn-secondary" id="countdownStop">Stop</a>
+    </div>
+
+</div>

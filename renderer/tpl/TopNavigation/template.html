@@ -1,0 +1,66 @@
+<script id="TopNavigation/template" type="template">
+<?
+const { Menus, enableDebugToolButton } = data;
+const leftMenus = Menus.filter(({right}) => !right);
+const rightMenus = Menus.filter(({right}) => !!right);
+?>
+    <nav class="navbar navbar-default">
+
+        <div class="navbar-local color-accent theme-dark">
+            <div class="container">
+
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
+                        <span class="sr-only">Toggle navigation</span>
+                        <i class="glyph glyph-hamburger"></i>
+                    </button>
+
+                    <a href="#" class="navbar-brand">Loop Timer</a>
+
+                    <div class="window-controls btn-group">
+                        <a class="btn theme-light no-outline minimize"><i class="glyph glyph-remove"></i></a>
+                        <!--<a class="btn theme-light no-outline maximize"><i class="glyph glyph-stop"></i></a>-->
+                        <a class="btn theme-light no-outline close"><i class="glyph glyph-clear"></i></a>
+                        <?=enableDebugToolButton ? `
+                        <a class="btn theme-light no-outline devtools"><i class="glyph glyph-repair"></i></a>` : ''?>
+                    </div>
+
+                </div>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+                    <ul class="nav navbar-nav">
+                        <? leftMenus.forEach(Menu => include(Menu.dropdown ? 'TopNavigation/template.Menu.dropdown' : 'TopNavigation/template.Menu', Menu)); ?>
+                    </ul>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <? rightMenus.forEach(Menu => include(Menu.dropdown ? 'TopNavigation/template.Menu.dropdown' : 'TopNavigation/template.Menu', Menu)); ?>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </nav>
+</script>
+
+<script id="TopNavigation/template.Menu" type="template">
+<? const {name, html, href} = data; ?>
+<li><a href="<?=href?>" role="button"><?=html || name?></a></li>
+</script>
+
+<script id="TopNavigation/template.Menu.dropdown" type="template">
+<? const {name, html, href, children, dropdownHide} = data; ?>
+<li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?=html || name?><i class="glyph glyph-chevron-down-2"></i></a>
+    <ul class="dropdown-menu" role="menu">
+
+        <?=(!dropdownHide && href) ? `<li><a href="${href}">${html || name}</a></li><li class="divider"></li>` : ''?>
+
+        <? (children||[]).forEach(Sub => include('TopNavigation/template.Menu.Sub', Sub)) ?>
+
+    </ul>
+</li>
+</script>
+
+<script id="TopNavigation/template.Menu.Sub" type="template">
+<? const {name, html, href} = data; ?>
+<li><a href="<?=href?>"><?=html || name?></a></li>
+</script>

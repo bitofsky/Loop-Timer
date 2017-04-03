@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "target": "es2016", // for electron 1.5.x
+        "module": "none",
+        "moduleResolution": "node",
+        "sourceMap": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "noImplicitAny": true,
+        "suppressImplicitAnyIndexErrors": true,
+        "alwaysStrict": true,
+        "strictNullChecks": true,
+        "skipLibCheck": true,
+        "lib": [
+            "dom",
+            "es2017"
+        ],
+        "allowJs": false,
+        "declaration": false,
+        "removeComments": false,
+        "baseUrl": ".",
+        "paths": {
+            "ajst": [
+                "./node_modules/ajst/ajst.ts"
+            ]
+        }
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
