@@ -27,7 +27,7 @@ exports.Config = new ElectronConfig({
         }
     }
 });
-const sendMainWindow = (channel, ...args) => {
+exports.sendMainWindow = (channel, ...args) => {
     if (!mainWindow)
         return;
     mainWindow.webContents.send(channel, ...args);
@@ -48,12 +48,12 @@ exports.reset = () => cycle = 0;
 exports.getConfig = (key) => exports.Config.get(key);
 exports.setConfig = (key, value) => {
     exports.Config.set(key, value);
-    sendMainWindow('affectConfig');
+    exports.sendMainWindow('affectConfig');
     key.includes('shortcut') && timer_shortcut_1.affectShortcut();
 };
 exports.increase = () => {
-    sendMainWindow('timer-notify', cycle);
-    timer_progressbar_1.sendProgressbar('timer-notify', cycle);
+    exports.sendMainWindow('timerNotify', cycle);
+    timer_progressbar_1.sendProgressbar('timerNotify', cycle);
     cycle++;
 };
 exports.start = () => {
@@ -66,7 +66,7 @@ exports.start = () => {
     timer_progressbar_1.createProgressbar();
 };
 exports.stop = () => {
-    sendMainWindow('timer-stop');
+    exports.sendMainWindow('timerStop');
     exports.reset();
     oIntervalTimer && clearInterval(oIntervalTimer);
     oIntervalTimer = null;

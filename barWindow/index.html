@@ -84,7 +84,7 @@
 
     $window.on('resize', setSize);
     $window.on('contextmenu', e => e.preventDefault());
-    ipcRenderer.on('timer-notify', (event, cycle) => {
+    ipcRenderer.on('timerNotify', (event, cycle) => {
         if (cycle < 4) {
             $progress.addClass('active');
             $progressValue.width(width * (cycle / 3));

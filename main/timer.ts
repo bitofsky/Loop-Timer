@@ -63,8 +63,8 @@ export const setConfig = (key: string, value: any) => {
 };
 
 export const increase = () => {
-    sendMainWindow('timer-notify', cycle);
-    sendProgressbar('timer-notify', cycle);
+    sendMainWindow('timerNotify', cycle);
+    sendProgressbar('timerNotify', cycle);
     cycle++;
 };
 
@@ -83,7 +83,7 @@ export const start = () => {
 };
 
 export const stop = () => {
-    sendMainWindow('timer-stop');
+    sendMainWindow('timerStop');
     reset();
     oIntervalTimer && clearInterval(oIntervalTimer);
     oIntervalTimer = null;
