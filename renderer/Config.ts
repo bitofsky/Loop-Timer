@@ -17,10 +17,16 @@ export const Menus: Menu[] = [
         ]
     },
     {
+        name: 'Manual',
+        html: '<span class="glyph glyph-help" aria-hidden="true"></span> Manual',
+        dropdown: false,
+        href: `javascript: require('electron').shell.openExternal('http://hbs.pe.kr/220974213959');`
+    },
+    {
         name: 'Download',
         html: '<span class="glyph glyph-download" aria-hidden="true"></span> Download',
         dropdown: false,
-        href: `javascript: require('electron').shell.openExternal('http://hbs.pe.kr/220974213959');`
+        href: `javascript: require('electron').shell.openExternal('https://github.com/bitofsky/Loop-Timer/releases');`
     },
     {
         name: 'DeveloperBlog',
