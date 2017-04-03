@@ -1,7 +1,7 @@
 
 export const isDev = process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath);
 export const debugLog = isDev ? true : false;
-export const enableDebugToolButton = true;
+export const enableDebugToolButton = false;
 export const DefaultRoute = 'Setting/Timer';
 export const Menus: Menu[] = [
     {
