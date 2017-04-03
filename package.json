@@ -3,7 +3,7 @@
   "main": "run.js",
   "scripts": {
     "start": "node ./node_modules/electron/cli.js run.js",
-    "compile": "node task",
+    "compile": "./node_modules/.bin/tsc -p .",
     "install": "npm run compile && code .",
     "build-ia32": "build --win --ia32",
     "build": "npm run compile && npm run build-ia32"
