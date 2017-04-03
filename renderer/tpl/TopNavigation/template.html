@@ -17,6 +17,14 @@ const rightMenus = Menus.filter(({right}) => !!right);
 
                     <a href="#" class="navbar-brand">Loop Timer</a>
 
+                    <button type="button" class="navbar-toggle" style="width:40px; color:#404040;" id="timerStart" title="Start">
+                        <span class="glyph glyph-play" aria-hidden="true"></span>
+                    </button>
+
+                    <button type="button" class="navbar-toggle" style="width:40px; color:#d02e00;" id="timerStop" title="Stop">
+                        <span class="glyph glyph-pause" aria-hidden="true"></span>
+                    </button>
+
                     <div class="window-controls btn-group">
                         <a class="btn theme-light no-outline minimize"><i class="glyph glyph-remove"></i></a>
                         <!--<a class="btn theme-light no-outline maximize"><i class="glyph glyph-stop"></i></a>-->

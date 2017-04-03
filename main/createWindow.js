@@ -21,7 +21,7 @@ exports.createWindow = () => {
     if (win)
         return;
     // Create the renderer window.
-    win = new electron_1.BrowserWindow({ width: 400, height: 550, frame: false, minWidth: 400, resizable: false, maximizable: false });
+    win = new electron_1.BrowserWindow({ width: 400, height: 700, frame: false, minWidth: 400, resizable: false, maximizable: false });
     // and load the index.html of the app.
     win.loadURL(url.format({
         pathname: path.join(__dirname, '../renderer/tpl/index.html'),

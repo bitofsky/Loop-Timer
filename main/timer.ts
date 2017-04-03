@@ -1,33 +1,37 @@
-import { app, globalShortcut, ipcMain, BrowserWindow } from 'electron';
-import * as path from 'path';
-import * as url from 'url';
+import { ipcMain } from 'electron';
+import { initShortcut, affectShortcut } from './timer.shortcut';
+import { createProgressbar, removeProgressbar, sendProgressbar } from './timer.progressbar';
 
 const ElectronConfig = require('electron-config');
 
 let mainWindow: Electron.BrowserWindow | null;
-let barWindow: Electron.BrowserWindow | null;
 let oIntervalTimer: NodeJS.Timer | null;
 let cycle = 0;
 
-let oConfig = new ElectronConfig({
+export const Config = new ElectronConfig({
     defaults: {
         progressbar: {
             show: true,
             draggable: true,
             x: 0,
             y: 0
+        },
+        shortcut: {
+            start: {
+                prefix: 'CmdOrCtrl',
+                key: '1'
+            },
+            stop: {
+                prefix: 'CmdOrCtrl',
+                key: '2'
+            }
         }
     }
 });
 
-const mainWindowSend = (channel: string, ...args: any[]) => {
+export const sendMainWindow = (channel: string, ...args: any[]) => {
     if (!mainWindow) return;
     mainWindow.webContents.send(channel, ...args);
-};
-
-const barWindowSend = (channel: string, ...args: any[]) => {
-    if (!barWindow) return;
-    barWindow.webContents.send(channel, ...args);
 };
 
 // timer init
@@ -36,31 +40,31 @@ export const init = (win: Electron.BrowserWindow) => {
     mainWindow = win;
 
     mainWindow.on('close', stop);
-    app.on('will-quit', () => globalShortcut.unregisterAll());
+
     ipcMain.on('reset', reset);
     ipcMain.on('start', start);
     ipcMain.on('stop', stop);
     ipcMain.on('getConfig', (e, key) => e.returnValue = getConfig(key));
     ipcMain.on('setConfig', (event, key, value) => setConfig(key, value));
-    ipcMain.on('createBar', createBar);
+    ipcMain.on('createProgressbar', createProgressbar);
 
-    globalShortcut.register('CommandOrControl+1', start);
-    globalShortcut.register('CommandOrControl+2', stop);
+    initShortcut();
 
 };
 
 export const reset = () => cycle = 0;
 
-export const getConfig = (key: string) => oConfig.get(key);
+export const getConfig = (key: string) => Config.get(key);
 
 export const setConfig = (key: string, value: any) => {
-    oConfig.set(key, value);
-    mainWindowSend('affectConfig');
+    Config.set(key, value);
+    sendMainWindow('affectConfig');
+    key.includes('shortcut') && affectShortcut();
 };
 
 export const increase = () => {
-    mainWindowSend('timer-notify', cycle);
-    barWindowSend('timer-notify', cycle);
+    sendMainWindow('timer-notify', cycle);
+    sendProgressbar('timer-notify', cycle);
     cycle++;
 };
 
@@ -74,73 +78,16 @@ export const start = () => {
 
     increase();
 
-    createBar();
+    createProgressbar();
 
 };
 
 export const stop = () => {
-    mainWindowSend('timer-stop');
+    sendMainWindow('timer-stop');
     reset();
     oIntervalTimer && clearInterval(oIntervalTimer);
     oIntervalTimer = null;
-    removeBar();
+    removeProgressbar();
 };
 
-export const createBar = () => {
-
-    removeBar();
-
-    const conf = getConfig('progressbar');
-
-    if (!oIntervalTimer) return;
-    if (!conf.show) return;
-
-    const option = {
-        width: 38, height: 38,
-        center: true,
-        resizable: false,
-        frame: false, alwaysOnTop: true, maximizable: false, minimizable: false, hasShadow: false, skipTaskbar: true, focusable: false
-    };
-
-    if (+conf.x || +conf.y) {
-        option['x'] = conf.x;
-        option['y'] = conf.y;
-    }
-
-    // Create the renderer window.
-    barWindow = new BrowserWindow(option);
-
-    // and load the index.html of the app.
-    barWindow.loadURL(url.format({
-        pathname: path.join(__dirname, '../barWindow/index.html'),
-        protocol: 'file:',
-        slashes: true
-    }));
-
-    // Emitted when the window is closed.
-    barWindow.on('closed', () => {
-        barWindow = null;
-    });
-
-    let moveTimer: NodeJS.Timer | null;
-
-    barWindow.on('move', () => {
-        moveTimer && clearTimeout(moveTimer);
-        moveTimer = setTimeout(() => {
-            if (!barWindow) return;
-            const p = barWindow.getPosition();
-            setConfig('progressbar.x', p[0]);
-            setConfig('progressbar.y', p[1]);
-            moveTimer = null;
-        }, 300);
-    });
-
-    //barWindow.webContents.openDevTools();
-
-};
-
-export const removeBar = () => {
-
-    barWindow && barWindow.close();
-
-};
+export const isActive = () => !!oIntervalTimer;

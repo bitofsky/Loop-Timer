@@ -1,43 +1,43 @@
 <div class="container">
 
-    <div class="form-group">
-        <p class="form-group-label" style="margin-bottom:20px;">Countdown <span id="countdownNotify" style="display:none;">0</span></p>
-        <audio controls class="cycleAudio">
-            <source src="../sound/cycle1.mp3" type="audio/mpeg">
-        </audio>
+    <div class="col-xs-24">&nbsp;</div>
 
-        <audio controls class="cycleAudio">
-            <source src="../sound/cycle2.mp3" type="audio/mpeg">
-        </audio>
+    <fieldset class="form-group col-xs-24">
+        <legend>Sounds <span id="timerNotify" style="display:none;">0</span></legend>
+        <div class="col-xs-24">
+            <audio controls class="cycleAudio">
+                <source src="../sound/cycle1.mp3" type="audio/mpeg">
+            </audio>
 
-        <audio controls class="cycleAudio" style="display:none;">
-            <source src="../sound/cycle3.mp3" type="audio/mpeg">
-        </audio>
+            <audio controls class="cycleAudio">
+                <source src="../sound/cycle2.mp3" type="audio/mpeg">
+            </audio>
 
-        <audio controls class="cycleAudio">
-            <source src="../sound/cycle4.mp3" type="audio/mpeg">
-        </audio>
-    </div>
+            <audio controls class="cycleAudio" style="display:none;">
+                <source src="../sound/cycle3.mp3" type="audio/mpeg">
+            </audio>
 
-    <hr/>
+            <audio controls class="cycleAudio">
+                <source src="../sound/cycle4.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+    </fieldset>
 
-    <div class="form-group col-xs-24" style="margin-bottom:0;">
-        <p class="form-group-label">Progress Bar</p>
+    <fieldset class="form-group col-xs-24">
+        <legend>Progress Bar</legend>
         <div class="col-xs-12">
-            <div class="checkbox" style="margin-bottom:0;">
+            <div class="checkbox" style="margin-bottom:0; margin-top:0;">
                 <label><input type="checkbox" checked id="progressbarShow"><span>Show</span></label>
             </div>
         </div>
         <div class="col-xs-12">
-            <div class="checkbox" style="margin-bottom:0;">
+            <div class="checkbox" style="margin-bottom:0; margin-top:0;">
                 <label><input type="checkbox" checked id="progressbarDraggable"><span>Draggable</span></label>
             </div>
         </div>
-    </div>
 
-    <div class="form-group col-xs-24" style="margin-bottom:0;">
-        <p class="form-group-label">Position</p>
         <div class="col-xs-24" style="margin-top:22px;">
+            <p class="form-group-label">Position</p>
             <div class="col-xs-10">
                 <input type="number" class="form-control" id="progressbarX" min="0" placeholder="X" readonly>
             </div>
@@ -48,13 +48,31 @@
                 <span class="glyph glyph-refresh" aria-hidden="true" id="progressbarReset" style="cursor: pointer;"></span>
             </div>
         </div>
-    </div>
+    </fieldset>
 
-    <div class="col-xs-24" style="text-align: center;">
-        <a class="btn btn-primary" id="countdownStart">Start</a>
-        <a class="btn btn-secondary" id="countdownStop">Stop</a>
-    </div>
+    <fieldset class="form-group col-xs-24 shortcut">
+        <legend>Keybord ShortCut</legend>
 
-    <div style="margin-bottom: 10px;">&nbsp;</div>
+        <div class="col-xs-24">
+            <p class="form-group-label" style="padding-top: 0px;">Start</p>
+            <div class="col-xs-12">
+                <select class="form-control start prefix"></select>
+            </div>
+            <div class="col-xs-12">
+                <select class="form-control start key"></select>
+            </div>
+        </div>
+
+        <div class="col-xs-24">
+            <p class="form-group-label" style="padding-top: 0px;">Stop</p>
+            <div class="col-xs-12">
+                <select class="form-control stop prefix"></select>
+            </div>
+            <div class="col-xs-12">
+                <select class="form-control stop key"></select>
+            </div>
+        </div>
+
+    </fieldset>
 
 </div>
