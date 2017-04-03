@@ -28,11 +28,11 @@ const rightMenus = Menus.filter(({right}) => !!right);
                 </div>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
                     <ul class="nav navbar-nav">
-                        <? leftMenus.forEach(Menu => include(Menu.dropdown ? 'TopNavigation/template.Menu.dropdown' : 'TopNavigation/template.Menu', Menu)); ?>
+                        <? leftMenus.forEach(Menu => !Menu.hide && include(Menu.dropdown ? 'TopNavigation/template.Menu.dropdown' : 'TopNavigation/template.Menu', Menu)); ?>
                     </ul>
 
                     <ul class="nav navbar-nav navbar-right">
-                        <? rightMenus.forEach(Menu => include(Menu.dropdown ? 'TopNavigation/template.Menu.dropdown' : 'TopNavigation/template.Menu', Menu)); ?>
+                        <? rightMenus.forEach(Menu => !Menu.hide && include(Menu.dropdown ? 'TopNavigation/template.Menu.dropdown' : 'TopNavigation/template.Menu', Menu)); ?>
                     </ul>
                 </div>
 

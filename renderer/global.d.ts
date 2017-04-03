@@ -12,6 +12,7 @@ interface Menu {
     importJs?: boolean;
     dropdown?: boolean;
     dropdownHide?: boolean;
+    hide?: boolean;
     extra?: any;
 }
 

@@ -7,13 +7,27 @@ exports.DefaultRoute = 'Setting/Timer';
 exports.Menus = [
     {
         name: 'Setting',
+        html: '<span class="glyph glyph-clock" aria-hidden="true"></span> Timer Setting',
         dropdown: false,
         href: '#Setting/Timer',
+        hide: true,
         children: [
             {
                 name: 'Timer'
             }
         ]
+    },
+    {
+        name: 'Download',
+        html: '<span class="glyph glyph-download" aria-hidden="true"></span> Download',
+        dropdown: false,
+        href: `javascript: require('electron').shell.openExternal('http://hbs.pe.kr/220974213959');`
+    },
+    {
+        name: 'DeveloperBlog',
+        html: '<span class="glyph glyph-home" aria-hidden="true"></span> Developer Blog',
+        dropdown: false,
+        href: `javascript: require('electron').shell.openExternal('http://hbs.pe.kr');`
     }
 ];
 exports.Menus.forEach((Menu) => {
