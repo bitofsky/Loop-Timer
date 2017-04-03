@@ -1,6 +1,7 @@
 "use strict";
-const prefixList = ['-', 'CmdOrCtrl', 'Alt', 'Option', 'AltGr', 'Shift', 'Super'];
+const prefixList = ['NONE', 'CmdOrCtrl', 'Alt', 'Option', 'AltGr', 'Shift', 'Super'];
 const keyList = [
+    'NONE',
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10',
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K',
     'L', 'N', 'M', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V',
@@ -14,33 +15,31 @@ const keyList = [
 ];
 module.exports = () => {
     const { getConfig, setConfig } = require('./Timer');
-    const $shortcut = {
-        start: {
-            prefix: $('.shortcut .start.prefix'),
-            key: $('.shortcut .start.key')
-        },
-        stop: {
-            prefix: $('.shortcut .stop.prefix'),
-            key: $('.shortcut .stop.key')
-        }
-    };
-    prefixList.forEach(v => {
-        $shortcut.start.prefix.append(`<option value="${v === '-' ? '' : v}">${v}</option>`);
-        $shortcut.stop.prefix.append(`<option value="${v === '-' ? '' : v}">${v}</option>`);
-    });
-    keyList.forEach(v => {
-        $shortcut.start.key.append(`<option value="${v}">${v}</option>`);
-        $shortcut.stop.key.append(`<option value="${v}">${v}</option>`);
-    });
     const shortcut = getConfig('shortcut');
+    const $shortcut = $('.shortcut');
     Object.keys(shortcut).forEach(type => {
-        $shortcut[type].prefix.val(shortcut[type].prefix);
-        $shortcut[type].key.val(shortcut[type].key);
+        $shortcut.append(`
+        <div class="col-xs-24">
+            <p class="form-group-label" style="padding-top: 0px;">${type.replace(/^[a-z]/, s => s.toUpperCase())}</p>
+            <div class="col-xs-12">
+                <select class="form-control ${type} prefix"></select>
+            </div>
+            <div class="col-xs-12">
+                <select class="form-control ${type} key"></select>
+            </div>
+        </div>
+        `);
+        const $prefix = $(`.shortcut .${type}.prefix`);
+        const $key = $(`.shortcut .${type}.key`);
+        prefixList.forEach(v => $prefix.append(`<option value="${v === 'NONE' ? '' : v}">${v}</option>`));
+        keyList.forEach(v => $key.append(`<option value="${v === 'NONE' ? '' : v}">${v}</option>`));
+        $prefix.val(shortcut[type].prefix);
+        $key.val(shortcut[type].key);
     });
     $('.shortcut').on('change', '.prefix, .key', e => {
         Object.keys(shortcut).forEach(type => {
-            shortcut[type].prefix = $shortcut[type].prefix.val();
-            shortcut[type].key = $shortcut[type].key.val();
+            shortcut[type].prefix = $(`.shortcut .${type}.prefix`).val();
+            shortcut[type].key = $(`.shortcut .${type}.key`).val();
         });
         setConfig('shortcut', shortcut);
     });

@@ -19,7 +19,7 @@ export const createProgressbar = () => {
     if (!isActive()) return;
     if (!conf.show) return;
 
-    const option = {
+    const option: Electron.BrowserWindowOptions = {
         width: 38, height: 38,
         center: true,
         resizable: false,

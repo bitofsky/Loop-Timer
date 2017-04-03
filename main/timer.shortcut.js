@@ -11,8 +11,13 @@ exports.affectShortcut = () => {
     const shortcut = timer_1.getConfig('shortcut');
     Object.keys(shortcut).forEach(type => {
         const accelerator = [shortcut[type].prefix, shortcut[type].key].filter(x => x).join('+');
-        const event = timer_1.ShortcutEvents[type];
-        electron_1.globalShortcut.register(accelerator, event);
+        const bind = timer_1.ShortcutEvents[type];
+        try {
+            accelerator && bind && electron_1.globalShortcut.register(accelerator, bind);
+        }
+        catch (e) {
+            console.error(e);
+        }
     });
 };
 //# sourceMappingURL=timer.shortcut.js.map

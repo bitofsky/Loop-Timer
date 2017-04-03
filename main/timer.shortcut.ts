@@ -14,8 +14,12 @@ export const affectShortcut = () => {
 
     Object.keys(shortcut).forEach(type => {
         const accelerator = [shortcut[type].prefix, shortcut[type].key].filter(x => x).join('+');
-        const event = ShortcutEvents[type];
-        globalShortcut.register(accelerator, event);
+        const bind = ShortcutEvents[type];
+        try {
+            accelerator && bind && globalShortcut.register(accelerator, bind);
+        } catch (e) {
+            console.error(e);
+        }
     });
 
 };

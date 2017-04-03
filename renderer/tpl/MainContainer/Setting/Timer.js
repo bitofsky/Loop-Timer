@@ -12,7 +12,12 @@ exports.default = () => {
     };
     const audioStop = () => $audios.each((i, el) => {
         el.pause();
+    });
+    const audioReset = () => $audios.each((i, el) => {
         el.currentTime = 0;
+    });
+    const audioResume = () => $audios.each((i, el) => {
+        !!el.currentTime && el.paused && !el.ended && el.play();
     });
     const audioPlay = (idx) => $audios[idx].play();
     ipcRenderer.removeAllListeners('timerNotify');
@@ -23,11 +28,14 @@ exports.default = () => {
             audioPlay(cycle / 4);
         if (cycle >= 15)
             ipcRenderer.send('reset');
+        audioResume();
     });
-    ipcRenderer.on('timerStop', (event) => {
+    ipcRenderer.on('timerStop', () => {
         $timer.notify.text(0);
         audioStop();
+        audioReset();
     });
+    ipcRenderer.on('timerPause', audioStop);
     $timer.start.on('click', () => ipcRenderer.send('start'));
     $timer.stop.on('click', () => ipcRenderer.send('stop'));
     require('./Timer.progressbar')();

@@ -37,10 +37,7 @@ exports.increase = () => {
     cycle++;
 };
 exports.start = () => {
-    // clear previous interval
-    if (oIntervalTimer)
-        return exports.reset();
-    // set interval
+    oIntervalTimer && exports.stop();
     oIntervalTimer = setInterval(exports.increase, 1000);
     exports.increase();
     timer_progressbar_1.createProgressbar();
@@ -48,30 +45,34 @@ exports.start = () => {
 exports.stop = () => {
     exports.sendMainWindow('timerStop');
     exports.reset();
-    oIntervalTimer && clearInterval(oIntervalTimer);
-    oIntervalTimer = null;
+    exports.clearLoop();
     timer_progressbar_1.removeProgressbar();
 };
+exports.clearLoop = () => {
+    oIntervalTimer && clearInterval(oIntervalTimer);
+    oIntervalTimer = null;
+};
 exports.isActive = () => !!oIntervalTimer;
-exports.Config = new ElectronConfig({
-    defaults: {
-        progressbar: {
-            show: true,
-            draggable: true,
-            x: 0,
-            y: 0
+const defaults = {
+    progressbar: {
+        show: true,
+        draggable: true,
+        x: 0,
+        y: 0
+    },
+    shortcut: {
+        start: {
+            prefix: 'CmdOrCtrl',
+            key: '1'
         },
-        shortcut: {
-            start: {
-                prefix: 'CmdOrCtrl',
-                key: '1'
-            },
-            stop: {
-                prefix: 'CmdOrCtrl',
-                key: '2'
-            }
+        stop: {
+            prefix: 'CmdOrCtrl',
+            key: '2'
         }
     }
-});
+};
+exports.Config = new ElectronConfig({ defaults });
+// 추가된 config 셋팅은 아래와 같은 형태로 셀프 추가 해야, 기존 버전 config가 함께 mix 된다.
+// !Config.get('shortcut.pause') && Config.set('shortcut.pause', defaults.shortcut.pause);
 exports.ShortcutEvents = { start: exports.start, stop: exports.stop };
 //# sourceMappingURL=timer.js.map
