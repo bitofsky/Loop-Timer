@@ -1,8 +1,12 @@
+/**
+ * 메인 윈도우 생성 및 관리
+ */
 import { BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import { init } from './timer';
 
+// 개발 모드 체크
 const isDev = process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath);
 
 let win: Electron.BrowserWindow | null;

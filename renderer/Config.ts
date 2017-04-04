@@ -2,7 +2,9 @@
 export const isDev = process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath);
 export const debugLog = isDev ? true : false;
 export const enableDebugToolButton = isDev;
-export const DefaultRoute = 'Setting/Timer';
+export const DefaultRoute = 'Setting/Timer'; // 기본 라우트 hash
+
+// 상단 메뉴 구조
 export const Menus: Menu[] = [
     {
         name: 'Setting',

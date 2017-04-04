@@ -1,3 +1,6 @@
+/**
+ * 타이머 바 관련
+ */
 import { BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
@@ -5,19 +8,21 @@ import { getConfig, setConfig, isActive } from './timer';
 
 let barWindow: Electron.BrowserWindow | null;
 
+// 바 윈도우로 ipc 전송
 export const sendProgressbar = (channel: string, ...args: any[]) => {
     if (!barWindow) return;
     barWindow.webContents.send(channel, ...args);
 };
 
+// 바 윈도우 생성
 export const createProgressbar = () => {
 
-    removeProgressbar();
+    removeProgressbar(); // 기존 바 윈도우 제거
 
-    const conf = getConfig('progressbar');
+    const conf = getConfig('progressbar'); // 바 윈도우 Config
 
-    if (!isActive()) return;
-    if (!conf.show) return;
+    if (!isActive()) return; // 타이머가 미동작 중이면 생성하지 않음
+    if (!conf.show) return; // 보임 설정이 아니면 생성하지 않음
 
     const option: Electron.BrowserWindowOptions = {
         width: 38, height: 38,
@@ -26,7 +31,7 @@ export const createProgressbar = () => {
         frame: false, alwaysOnTop: true, maximizable: false, minimizable: false, hasShadow: false, skipTaskbar: true, focusable: false
     };
 
-    if (+conf.x || +conf.y) {
+    if (+conf.x || +conf.y) { // x나 y가 지정된 경우에만 포지션을 설정하고 비어있는 경우 center에 뜨도록 한다
         option['x'] = conf.x;
         option['y'] = conf.y;
     }
@@ -46,16 +51,21 @@ export const createProgressbar = () => {
         barWindow = null;
     });
 
+    // 바 윈도우 이동 관련 Config 동기화
+    // 바로 on move에 direct로 동기화 시키면 disk에 쓰는 빈도가 너무 높아서 성능에 악영향
+    // moveTimer를 생성하고 300ms 후 동기화를 예약시킨다.
+    // 그 사이 move가 반복 발생하면 예약을 취소하며 새 예약을 생성하여 delay 시킨다.
+    // 최종적으로 move가 발생한 후 300ms 후에 1번만 기록한다.
     let moveTimer: NodeJS.Timer | null;
 
-    barWindow.on('move', () => {
-        moveTimer && clearTimeout(moveTimer);
-        moveTimer = setTimeout(() => {
+    barWindow.on('move', () => { // 윈도우 move 감지
+        moveTimer && clearTimeout(moveTimer); // 기존 타이머 제거
+        moveTimer = setTimeout(() => { // 새 타이머 예약
             if (!barWindow) return;
             const p = barWindow.getPosition();
-            setConfig('progressbar.x', p[0]);
+            setConfig('progressbar.x', p[0]); // config에 저장
             setConfig('progressbar.y', p[1]);
-            moveTimer = null;
+            moveTimer = null; // 타이머 제거
         }, 300);
     });
 
@@ -63,6 +73,7 @@ export const createProgressbar = () => {
 
 };
 
+// 바 윈도우 제거
 export const removeProgressbar = () => {
 
     barWindow && barWindow.close();

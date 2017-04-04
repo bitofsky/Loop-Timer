@@ -1,3 +1,7 @@
+/**
+ * Electron entry point
+ */
+
 import { app } from 'electron';
 import { createWindow } from './main/createWindow';
 
