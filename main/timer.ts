@@ -104,7 +104,8 @@ const defaults = {
             prefix: 'CmdOrCtrl',
             key: '2'
         }
-    }
+    },
+    maxCycle: 15 // 15 or 19
 };
 
 // Config 초기화

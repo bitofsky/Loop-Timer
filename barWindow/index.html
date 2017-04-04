@@ -70,6 +70,7 @@
 
     let width = 0;
     let height = 0;
+    let maxCycle = ipcRenderer.sendSync('getConfig', 'maxCycle');
 
     const setSize = () => {
         width = $window.width();
@@ -90,14 +91,9 @@
             $progressValue.width(width * (cycle / 3));
         }
         else {
+            let x = maxCycle - 4;
             $progress.removeClass('active');
-            $progressValue.width(width * ((cycle - 4) / 11));
-            /*
-            $progress.attr({
-                max: 11,
-                value: cycle - 4
-            });
-            */
+            $progressValue.width(width * ((cycle - 4) / x));
         }
     });
 

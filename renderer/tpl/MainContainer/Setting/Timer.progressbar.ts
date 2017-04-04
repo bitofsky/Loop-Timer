@@ -26,12 +26,12 @@ export default () => {
 
     ipcRenderer.on('onChangeConfig', affectConfig); // 메인 프로세스에서 Config 변경시 affectConfig 실행
 
-    $progressbar.show.on('change', e => { // 바 Show 체크박스
+    $progressbar.show.on('change', () => { // 바 Show 체크박스
         setConfig('progressbar.show', $progressbar.show.prop('checked')); // 설정 저장
         ipcRenderer.send('createProgressbar'); // 바 재생성
     });
 
-    $progressbar.draggable.on('change', e => { // 바 Draggable 체크박스
+    $progressbar.draggable.on('change', () => { // 바 Draggable 체크박스
         setConfig('progressbar.draggable', $progressbar.draggable.prop('checked')); // 설정 저장
         ipcRenderer.send('createProgressbar'); // 바 재생성
     });
