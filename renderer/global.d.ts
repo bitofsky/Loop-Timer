@@ -22,9 +22,6 @@ interface Menu {
 interface Window {
     Root: string;
     initBody(): void;
-    timerPrepare(): void;
-    timerActive(): void;
-    timerNotify(cycle: number): void;
 }
 
 declare var window: Window;

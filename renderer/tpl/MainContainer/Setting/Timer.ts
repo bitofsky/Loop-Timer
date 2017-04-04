@@ -29,8 +29,6 @@ export default () => {
     const audioPlay = (idx: number) => (<HTMLMediaElement>$audios[idx]).play();
 
     ipcRenderer.removeAllListeners('timerNotify');
-    ipcRenderer.removeAllListeners('timer-active');
-
     ipcRenderer.on('timerNotify', (event, cycle) => {
         $timer.notify.text(cycle);
         if (cycle % 4 === 0) audioPlay(cycle / 4);
@@ -38,12 +36,14 @@ export default () => {
         audioResume();
     });
 
+    ipcRenderer.removeAllListeners('timerStop');
     ipcRenderer.on('timerStop', () => {
         $timer.notify.text(0);
         audioStop();
         audioReset();
     });
 
+    ipcRenderer.removeAllListeners('timerPause');
     ipcRenderer.on('timerPause', audioStop);
 
     $timer.start.on('click', () => ipcRenderer.send('start'));
