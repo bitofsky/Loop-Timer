@@ -30,7 +30,7 @@
     "url": "https://github.com/bitofsky/Loop-Timer"
   },
   "license": "GPL-3.0",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "ipc": {
     "appspace": "loop-timer:",
     "id": "autoreload"
