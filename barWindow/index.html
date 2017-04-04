@@ -13,6 +13,10 @@
     </script>
 
     <style>
+        html, body {
+            background: rgba(0, 0, 0, 0);
+        }
+        
         BODY {
             margin: 0;
             padding: 0;
@@ -25,10 +29,11 @@
             appearance: none;
             width: 0px;
             height: 0px;
+            overflow: hidden;
         }
         
         .progressbar {
-            background-color: #eee;
+            background-color: rgba(235,235,235,0.1);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
         }
         
@@ -64,18 +69,17 @@
     const $body = $('BODY');
     const $progress = $('.progressbar');
     const $progressValue = $('.progressbar > .progressbar-value');
-    const setDraggable = () => {
-        $body.css('-webkit-app-region', ipcRenderer.sendSync('getConfig', 'progressbar.draggable') ? 'drag' : 'no-drag');
-    };
 
     let width = 0;
     let height = 0;
     let maxCycle = ipcRenderer.sendSync('getConfig', 'maxCycle');
+    let draggable = ipcRenderer.sendSync('getConfig', 'progressbar.draggable');
+
+    const setDraggable = () => $body.css('-webkit-app-region', draggable ? 'drag' : 'no-drag');
 
     const setSize = () => {
         width = $window.width();
-        height = $window.height();
-
+        height = draggable ? $window.height() : $window.height() / 2;
         $progress.css({ width, height })
         $progressValue.css({ width: 0, height });
     };

@@ -28,6 +28,7 @@ export const createProgressbar = () => {
         width: 38, height: 38,
         center: true,
         resizable: false,
+        transparent: true,
         frame: false, alwaysOnTop: true, maximizable: false, minimizable: false, hasShadow: false, skipTaskbar: true, focusable: false
     };
 
