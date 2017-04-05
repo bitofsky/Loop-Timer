@@ -31,9 +31,6 @@
             width: 0px;
             height: 0px;
             overflow: hidden;
-        }
-        
-        .progressbar {
             background-color: rgba(235, 235, 235, 1);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
         }
@@ -41,15 +38,6 @@
         .progressbar .progressbar-value {
             background-image: -webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)), -webkit-linear-gradient(left, #09c, #09f);
             background-size: 35px 20px, 100% 100%, 100% 100%;
-            -webkit-transition: width 1s;
-            transition: width 1s;
-        }
-        
-        .progressbar.active .progressbar-value {
-            background-image: -webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)), -webkit-linear-gradient(left, yellow, #f44);
-            background-size: 35px 20px, 100% 100%, 100% 100%;
-            -webkit-transition: width 1s;
-            transition: width 1s;
         }
     </style>
 
@@ -71,35 +59,47 @@
     const $progress = $('.progressbar');
     const $progressValue = $('.progressbar > .progressbar-value');
 
-    let width = 0;
-    let height = 0;
-    let maxCycle = ipcRenderer.sendSync('getConfig', 'maxCycle');
-    let draggable = ipcRenderer.sendSync('getConfig', 'progressbar.draggable');
+    const { maxCycle, progressbar, cycleAction, interval } = ipcRenderer.sendSync('getConfig', 'all');
 
-    const setDraggable = () => $body.css('-webkit-app-region', draggable ? 'drag' : 'no-drag');
+    const width = $window.width();
+    let height = $window.height();
 
-    const setSize = () => {
-        width = $window.width();
-        height = draggable ? $window.height() : $window.height() / 2;
-        $progress.css({ width, height });
-        $progressValue.css({ width: 0, height });
-    };
+    if (progressbar.transparent && !progressbar.draggable) // 투명 모드이고 드래그가 꺼지면 절반 사이즈로 변경
+        height /= 2;
 
-    setSize();
-    setDraggable();
-
-    $window.on('resize', setSize);
+    $body.css('-webkit-app-region', progressbar.draggable ? 'drag' : 'no-drag');
+    $progress.css({ width, height });
+    $progressValue.css({ width: 0, height });
     $window.on('contextmenu', e => e.preventDefault());
+
     ipcRenderer.on('timerNotify', (event, cycle) => {
-        if (cycle < 4) {
-            $progress.addClass('active');
-            $progressValue.width(width * (cycle / 3));
+
+        const oAction = cycleAction.find(oAction => oAction.cycle === cycle);
+
+        if (!oAction) return;
+
+        let transWidth = width * oAction.size;
+        let currentWidth = Math.ceil($progressValue.width());
+        let duration = interval;
+        const easing = 'linear';
+
+        $progressValue.clearQueue().stop();
+
+        if (transWidth <= currentWidth) { // 목표 게이지가 작거나 리셋된 경우로 판단되면 빠르게 떨어뜨린다.
+            $progressValue.animate({ width: 0 }, 500, easing);
+            duration -= 500;
         }
-        else {
-            let x = maxCycle - 4;
-            $progress.removeClass('active');
-            $progressValue.width(width * ((cycle - 4) / x));
-        }
+
+        $progressValue.animate({ width: transWidth }, {
+            start: () => {
+                oAction.style && $progressValue.css('background-image', oAction.style);
+            },
+            duration,
+            easing
+        });
+
     });
+
+    ipcRenderer.send('progressbarOpened');
 
 </script>

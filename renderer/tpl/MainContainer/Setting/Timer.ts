@@ -13,6 +13,7 @@ export const setConfig = (key: string, value: any) => ipcRenderer.send('setConfi
 export default () => {
 
     let maxCycle = getConfig('maxCycle');
+    let cycleAction = getConfig('cycleAction');
 
     const $audios: JQuery = $('audio'); // 오디오 객체들
 
@@ -20,7 +21,8 @@ export default () => {
         notify: $('#timerNotify'),
         start: $('#timerStart'),
         stop: $('#timerStop'),
-        maxCycle: $('#maxCycle')
+        maxCycle: $('#maxCycle'),
+        cycleAction: $('#cycleAction')
     };
 
     // 오디오 모두 중지
@@ -34,11 +36,14 @@ export default () => {
     });
 
     // 오디오 시작
-    const audioPlay = (idx: number) => (<HTMLMediaElement>$audios[idx]).play();
+    const audioPlay = (id: string) => $audios.filter('#' + id).each((i: number, el: HTMLMediaElement) => {
+        el.currentTime = 0;
+        el.play();
+    });
 
     const affectConfig = () => { // Config가 변경된 경우 호출하여 객체들에 적용시킴
         maxCycle = getConfig('maxCycle');
-
+        cycleAction = getConfig('cycleAction');
         $timer.maxCycle.val(maxCycle);
     };
 
@@ -53,14 +58,16 @@ export default () => {
 
         $timer.notify.text(cycle);
 
-        switch (true) { // audio 플레이
-            case cycle === 0: audioPlay(0); break;
-            case cycle === 4: audioPlay(1); break;
-            case cycle === maxCycle - 3: audioPlay(2); break;
-        }
-
         // 끝까지 진행된 경우 Cycle 초기화 보냄
         if (cycle >= maxCycle) ipcRenderer.send('reset');
+
+        // 현재 사이클의 동작 확인
+        const oAction = cycleAction.find((oAction: any) => oAction.cycle === cycle);
+
+        if (!oAction) return;
+
+        // 사운드 재생
+        oAction.sound && audioPlay(oAction.sound);
 
     });
 

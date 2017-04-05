@@ -7,11 +7,13 @@ export default () => {
     const { getConfig, setConfig } = require('./Timer');
 
     const $progressbar = { // 바 설정 관련 객체
-        show: $('#progressbarShow'),
-        draggable: $('#progressbarDraggable'),
-        x: $('#progressbarX'),
-        y: $('#progressbarY'),
-        reset: $('#progressbarReset'),
+        form: $('.progressbar'),
+        show: $('.progressbar INPUT.show'),
+        draggable: $('.progressbar INPUT.draggable'),
+        transparent: $('.progressbar INPUT.transparent'),
+        x: $('.progressbar INPUT.x'),
+        y: $('.progressbar INPUT.y'),
+        reset: $('.progressbar SPAN.reset'),
     };
 
     const affectConfig = () => { // Config가 변경된 경우 호출하여 객체들에 적용시킴
@@ -26,13 +28,12 @@ export default () => {
 
     ipcRenderer.on('onChangeConfig', affectConfig); // 메인 프로세스에서 Config 변경시 affectConfig 실행
 
-    $progressbar.show.on('change', () => { // 바 Show 체크박스
-        setConfig('progressbar.show', $progressbar.show.prop('checked')); // 설정 저장
-        ipcRenderer.send('createProgressbar'); // 바 재생성
-    });
-
-    $progressbar.draggable.on('change', () => { // 바 Draggable 체크박스
-        setConfig('progressbar.draggable', $progressbar.draggable.prop('checked')); // 설정 저장
+    $progressbar.form.on('change', 'INPUT[type=checkbox]', () => { // 체크박스 on/off 시 Config 저장
+        setConfig('progressbar', Object.assign(getConfig('progressbar'), {
+            show: $progressbar.show.prop('checked'),
+            draggable: $progressbar.draggable.prop('checked'),
+            transparent: $progressbar.transparent.prop('checked'),
+        }));
         ipcRenderer.send('createProgressbar'); // 바 재생성
     });
 

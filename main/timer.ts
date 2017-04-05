@@ -40,30 +40,34 @@ export const init = (win: Electron.BrowserWindow) => {
 export const reset = () => cycle = 0;
 
 // Get Config
-export const getConfig = (key: string) => Config.get(key);
+export const getConfig = (key: string) => {
+    const idx = Config.get('presetIdx');
+    return key.toLowerCase() === 'all' ? Config.get(`presets.${idx}`) : Config.get(`presets.${idx}.${key}`);
+};
 
 // Set Config
 export const setConfig = (key: string, value: any) => {
-    Config.set(key, value);
+    const idx = Config.get('presetIdx');
+    Config.set(`presets.${idx}.${key}`, value);
     sendMainWindow('onChangeConfig');
     key.includes('shortcut') && affectShortcut();
 };
 
 // Increase Cycle
 export const increase = () => {
+    cycle++;
     sendMainWindow('timerNotify', cycle); // 메인 윈도우에 알림
     sendProgressbar('timerNotify', cycle); // 바 윈도우에 알림
-    cycle++;
 };
 
 // Timer Start
-export const start = () => {
+export const start = async () => {
 
     isActive() && stop(); // 이미 동작중인 경우 제거하고 초기화
-    oIntervalTimer = setInterval(increase, 1000); // interval 시작
+    oIntervalTimer = setInterval(increase, +getConfig('interval')); // interval 시작
 
-    increase(); // interval과 별개로 당장 시작
-    createProgressbar(); // 바 윈도우 생성
+    await createProgressbar().catch(() => {}); // 바 윈도우 생성. 실패해도 무시한다.
+    increase(); // interval과 별개로 바 윈도우가 생성되면 시작
 
 };
 
@@ -89,23 +93,43 @@ export const ShortcutEvents = { start, stop };
 
 // Default Config
 const defaults = {
-    progressbar: {
-        show: true,
-        draggable: true,
-        x: 0,
-        y: 0
-    },
-    shortcut: {
-        start: {
-            prefix: 'CmdOrCtrl',
-            key: '1'
+    presetIdx: 0,
+    presets: [
+        {
+            name: 'Diablo3 CoE : 4 Elements',
+            progressbar: {
+                show: true,
+                draggable: true,
+                transparent: true,
+                x: 0,
+                y: 0
+            },
+            shortcut: {
+                start: {
+                    prefix: 'CmdOrCtrl',
+                    key: '1'
+                },
+                stop: {
+                    prefix: 'CmdOrCtrl',
+                    key: '2'
+                }
+            },
+            interval: 4000,
+            maxCycle: 4,
+            cycleAction: [
+                {
+                    cycle: 1, size: 1, sound: 'ding',
+                    style: '-webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)), -webkit-linear-gradient(left, yellow, #f44)'
+                },
+                {
+                    cycle: 2, size: 1 / 3, sound: 'ding',
+                    style: '-webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)), -webkit-linear-gradient(left, #09c, #09f)'
+                },
+                { cycle: 3, size: 2 / 3 },
+                { cycle: 4, size: 3 / 3, sound: 'countdown4to1', }
+            ]
         },
-        stop: {
-            prefix: 'CmdOrCtrl',
-            key: '2'
-        }
-    },
-    maxCycle: 15 // 15 or 19
+    ]
 };
 
 // Config 초기화

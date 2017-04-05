@@ -15,20 +15,22 @@ export const sendProgressbar = (channel: string, ...args: any[]) => {
 };
 
 // 바 윈도우 생성
-export const createProgressbar = () => {
+export const createProgressbar = () => new Promise((resolve, reject) => {
 
     removeProgressbar(); // 기존 바 윈도우 제거
 
     const conf = getConfig('progressbar'); // 바 윈도우 Config
 
-    if (!isActive()) return; // 타이머가 미동작 중이면 생성하지 않음
-    if (!conf.show) return; // 보임 설정이 아니면 생성하지 않음
+    // 타이머가 미동작 중이면 생성하지 않음
+    // 보임 설정이 아니면 생성하지 않음
+    if (!isActive() || !conf.show)
+        return resolve();
 
     const option: Electron.BrowserWindowOptions = {
-        width: 38, height: 38,
+        width: 38 + (conf.transparent ? 10 : 0), height: 38,
         center: true,
         resizable: false,
-        transparent: true,
+        transparent: !!conf.transparent,
         frame: false, alwaysOnTop: true, maximizable: false, minimizable: false, hasShadow: false, skipTaskbar: true, focusable: false
     };
 
@@ -52,6 +54,11 @@ export const createProgressbar = () => {
         barWindow = null;
     });
 
+    // on show나 ready-to-show가 작동하지 않는다. 원인을 찾아야한다. 그전까진 title updated를 쓰자..
+    barWindow.on('page-title-updated', () => {
+        setTimeout(resolve, 50);
+    });
+
     // 바 윈도우 이동 관련 Config 동기화
     // 바로 on move에 direct로 동기화 시키면 disk에 쓰는 빈도가 너무 높아서 성능에 악영향
     // moveTimer를 생성하고 300ms 후 동기화를 예약시킨다.
@@ -70,9 +77,9 @@ export const createProgressbar = () => {
         }, 300);
     });
 
-    //barWindow.webContents.openDevTools();
+    barWindow.webContents.openDevTools();
 
-};
+});
 
 // 바 윈도우 제거
 export const removeProgressbar = () => {
