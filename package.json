@@ -18,7 +18,7 @@
   "devDependencies": {
     "@types/electron": "^1.4.33",
     "@types/jquery": "^2.0.40",
-    "electron": "<1.6.0",
+    "electron": "^1.6.2",
     "electron-builder": "^15.3.0",
     "node-ipc": "^8.10.3",
     "typescript": "^2.2.1",
