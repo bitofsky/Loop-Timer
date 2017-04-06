@@ -36,7 +36,6 @@
         }
         
         .progressbar .progressbar-value {
-            background-image: -webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)), -webkit-linear-gradient(left, #09c, #09f);
             background-size: 35px 20px, 100% 100%, 100% 100%;
         }
     </style>
@@ -52,14 +51,17 @@
 
 </html>
 <script>
+    const getBackground = (style) => {
+        style = style ? style.replace(/["'\(\);-_/\\]/g, '') : ''; // 특문 무시
+        return `-webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)), -webkit-linear-gradient(left, ${style}, ${style})`;
+    };
     const { ipcRenderer } = require('electron');
+    const { maxCycle, progressbar, cycleAction, interval } = ipcRenderer.sendSync('getConfig', 'all');
 
     const $window = $(window);
     const $body = $('BODY');
     const $progress = $('.progressbar');
     const $progressValue = $('.progressbar > .progressbar-value');
-
-    const { maxCycle, progressbar, cycleAction, interval } = ipcRenderer.sendSync('getConfig', 'all');
 
     const width = $window.width();
     let height = $window.height();
@@ -72,7 +74,7 @@
     $progressValue.css({ width: 0, height });
     $window.on('contextmenu', e => e.preventDefault());
 
-    ipcRenderer.on('timerNotify', (event, cycle) => {
+    const animateProgressBar = (cycle) => {
 
         const oAction = cycleAction.find(oAction => oAction.cycle === cycle);
 
@@ -92,13 +94,18 @@
 
         $progressValue.animate({ width: transWidth }, {
             start: () => {
-                oAction.style && $progressValue.css('background-image', oAction.style);
+                oAction.style && $progressValue.css('background-image', getBackground(oAction.style));
             },
             duration,
             easing
         });
 
-    });
+    };
+
+    // 최초엔 현재 cycle action을 바로 애니메이팅
+    animateProgressBar(ipcRenderer.sendSync('getCycle'));
+
+    ipcRenderer.on('timerNotify', (event, cycle) => animateProgressBar(cycle));
 
     ipcRenderer.send('progressbarOpened');
 

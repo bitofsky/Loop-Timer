@@ -7,6 +7,7 @@ import { initShortcut, affectShortcut } from './timer.shortcut'; // 타이머 �
 import { createProgressbar, removeProgressbar, sendProgressbar } from './timer.progressbar'; // 타이머 바
 
 const ElectronConfig = require('electron-config');
+const path = require('path');
 
 let mainWindow: Electron.BrowserWindow | null;
 let oIntervalTimer: NodeJS.Timer | null;
@@ -26,8 +27,14 @@ export const init = (win: Electron.BrowserWindow) => {
 
     // 렌더러 프로세스에서 ipc를 통해 호출할 수 있도록 매핑한다.
     ipcMain.on('reset', reset);
+    ipcMain.on('restart', () => {
+        if (!isActive()) return;
+        stop();
+        start();
+    });
     ipcMain.on('start', start);
     ipcMain.on('stop', stop);
+    ipcMain.on('getCycle', (e) => e.returnValue = cycle);
     ipcMain.on('getConfig', (e, key) => e.returnValue = getConfig(key)); // getConfig는 편의상 sync로 동작시킨다
     ipcMain.on('setConfig', (event, key, value) => setConfig(key, value));
     ipcMain.on('createProgressbar', createProgressbar);
@@ -41,6 +48,10 @@ export const reset = () => cycle = 0;
 
 // Get Config
 export const getConfig = (key: string) => {
+
+    // special config
+    if (key === 'colors') return ['#ffff00', '#0099ff', '#ff0000', '#008000', '#d800ff'];
+
     const idx = Config.get('presetIdx');
     return key.toLowerCase() === 'all' ? Config.get(`presets.${idx}`) : Config.get(`presets.${idx}.${key}`);
 };
@@ -66,7 +77,7 @@ export const start = async () => {
     isActive() && stop(); // 이미 동작중인 경우 제거하고 초기화
     oIntervalTimer = setInterval(increase, +getConfig('interval')); // interval 시작
 
-    await createProgressbar().catch(() => {}); // 바 윈도우 생성. 실패해도 무시한다.
+    createProgressbar(); // 바 윈도우 생성
     increase(); // interval과 별개로 바 윈도우가 생성되면 시작
 
 };
@@ -117,16 +128,10 @@ const defaults = {
             interval: 4000,
             maxCycle: 4,
             cycleAction: [
-                {
-                    cycle: 1, size: 1, sound: 'ding',
-                    style: '-webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)), -webkit-linear-gradient(left, yellow, #f44)'
-                },
-                {
-                    cycle: 2, size: 1 / 3, sound: 'ding',
-                    style: '-webkit-linear-gradient(-45deg, transparent 33%, rgba(0, 0, 0, .1) 33%, rgba(0, 0, 0, .1) 66%, transparent 66%), -webkit-linear-gradient(top, rgba(255, 255, 255, .25), rgba(0, 0, 0, .25)), -webkit-linear-gradient(left, #09c, #09f)'
-                },
-                { cycle: 3, size: 2 / 3 },
-                { cycle: 4, size: 3 / 3, sound: 'countdown4to1', }
+                { cycle: 1, size: 1, style: '#ffff00', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3') },
+                { cycle: 2, size: 1 / 3, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3') },
+                { cycle: 3, size: 2 / 3, style: '#0099ff' },
+                { cycle: 4, size: 3 / 3, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/countdown4to1.mp3') }
             ]
         },
     ]

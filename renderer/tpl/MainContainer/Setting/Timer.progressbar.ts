@@ -1,10 +1,10 @@
 /**
  * 바 설정 폼 동작 구성
  */
-export default () => {
+const { ipcRenderer } = require('electron');
+const { getConfig, setConfig } = require('./Timer');
 
-    const { ipcRenderer } = require('electron');
-    const { getConfig, setConfig } = require('./Timer');
+export default () => {
 
     const $progressbar = { // 바 설정 관련 객체
         form: $('.progressbar'),

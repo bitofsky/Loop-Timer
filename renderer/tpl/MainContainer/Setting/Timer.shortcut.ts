@@ -2,6 +2,8 @@
  * 키보드 단축키 관련
  */
 
+const { getConfig, setConfig } = require('./Timer');
+
 // 혼합키 리스트
 const prefixList = ['NONE', 'CmdOrCtrl', 'Alt', 'Option', 'AltGr', 'Shift', 'Super'];
 
@@ -25,7 +27,6 @@ const keyList = [
  */
 export default () => {
 
-    const { getConfig, setConfig } = require('./Timer');
     const shortcut = getConfig('shortcut');
     const $shortcut = $('.shortcut');
 
