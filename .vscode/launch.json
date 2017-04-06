@@ -5,15 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "protocol": "legacy",
             "type": "node",
             "request": "launch",
             "name": "Debug watch",
-            "program": "${workspaceRoot}/task.js",
             "cwd": "${workspaceRoot}",
-            "args": [
-                "run",
-                "watch"
-            ],
+            "runtimeExecutable": "${workspaceRoot}/debug.cmd",
             "port": 5858
         }
     ]
