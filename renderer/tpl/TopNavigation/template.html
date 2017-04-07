@@ -15,14 +15,14 @@ const rightMenus = Menus.filter(({right}) => !!right);
                         <i class="glyph glyph-hamburger"></i>
                     </button>
 
-                    <a href="#" class="navbar-brand">Loop Timer v<?=Package.version?></a>
+                    <a href="#" class="navbar-brand" style="margin-right:0px; padding-right:0px;">Loop Timer <span class="type-t8">v<?=Package.version?></span></a>
 
-                    <button type="button" class="navbar-toggle" style="width:40px; color:#404040;" id="timerStart" title="Start">
-                        <span class="glyph glyph-play" aria-hidden="true"></span>
+                    <button type="button" class="navbar-toggle" style="width:40px; color:#d02e00; float:right; margin-right: 30px;" id="timerStop" title="Stop">
+                        <span class="glyph glyph-pause" aria-hidden="true"></span>
                     </button>
 
-                    <button type="button" class="navbar-toggle" style="width:40px; color:#d02e00;" id="timerStop" title="Stop">
-                        <span class="glyph glyph-pause" aria-hidden="true"></span>
+                    <button type="button" class="navbar-toggle" style="width:40px; color:#404040; float:right;" id="timerStart" title="Start">
+                        <span class="glyph glyph-play" aria-hidden="true"></span>
                     </button>
 
                     <div class="window-controls btn-group">
