@@ -7,14 +7,16 @@ const { ipcRenderer } = require('electron');
 export const getConfig = (key: string) => ipcRenderer.sendSync('getConfig', key);
 
 // 메인에 Config 저장한다
-export const setConfig = (key: string, value: any) => ipcRenderer.send('setConfig', key, value);
+export const setConfig = (key: string, value: any, silent = false) => ipcRenderer.send('setConfig', key, value, silent);
+
+// 볼륨을 구한다.
+export const getVolume = (el: HTMLMediaElement | Element) => {
+    const audio = <HTMLMediaElement>el;
+    return audio.muted ? 0 : audio.volume;
+};
 
 // Timer TPL 구성 후 실행
 export default () => {
-
-    let maxCycle = getConfig('maxCycle');
-
-    let cycleAction: any[] = getConfig('cycleAction');
 
     const $cycleAudios = $('.cycleAudios');
 
@@ -22,7 +24,8 @@ export default () => {
         notify: $('#timerNotify'),
         start: $('#timerStart'),
         stop: $('#timerStop'),
-        maxCycle: $('#maxCycle')
+        maxCycle: $('#maxCycle'),
+        interval: $('#interval')
     };
 
     // 오디오 모두 중지
@@ -41,19 +44,43 @@ export default () => {
         el.play();
     });
 
-    const affectConfig = () => { // Config가 변경된 경우 호출하여 객체들에 적용시킴
-        maxCycle = getConfig('maxCycle');
-        cycleAction = getConfig('cycleAction');
+    const getConfigAll = () => config = getConfig('all');
 
-        $timer.maxCycle.val(maxCycle);
+    const affectConfig = () => { // Config가 변경된 경우 호출하여 객체들에 적용시킴
+
+        getConfigAll();
+
+        $timer.maxCycle.val(config.maxCycle);
+        $timer.interval.val(config.interval);
+
         $cycleAudios.empty();
 
-        cycleAction.forEach(({ cycle, sound }) => {
-            sound && $cycleAudios.append(`<audio controls class="cycleAudio cycle${cycle}" src="${sound}"></audio>`);
+        config.cycleAction.forEach(({ cycle, sound, volume }: any) => {
+            if (!sound) return;
+            const $audio = $(`<audio controls preload="none" class="cycleAudio cycle${cycle}" src="${sound}"></audio>`);
+            const el = <HTMLMediaElement>$audio[0];
+            el.volume = volume;
+            $cycleAudios.append($audio);
+
+            // 볼륨 변경시 볼륨을 저장한다.
+            // 너무 빈번하게 저장을 호출하지 않도록 한다.
+            let timer: NodeJS.Timer | null;
+            $audio.on('volumechange', ({ target }) => {
+                timer && clearTimeout(timer);
+                timer = setTimeout(() => {
+                    timer = null;
+                    const oAction = config.cycleAction.find((oAction: any) => oAction.cycle === cycle);
+                    oAction.volume = getVolume(target);
+                    setConfig('cycleAction', config.cycleAction, true); // 볼륨 변경은 저장시 UI를 갱신 하지 않는다.
+                }, 300);
+            });
         });
 
     };
 
+    let config: any;
+
+    getConfigAll();
     affectConfig(); // 최초 기본값 설정
 
     // 메인 프로세스에서 Config 변경시 affectConfig 실행
@@ -66,10 +93,10 @@ export default () => {
         $timer.notify.text(cycle);
 
         // 끝까지 진행된 경우 Cycle 초기화 보냄
-        if (cycle >= maxCycle) ipcRenderer.send('reset');
+        if (cycle >= config.maxCycle) ipcRenderer.send('reset');
 
         // 현재 사이클의 동작 확인
-        const oAction = cycleAction.find((oAction: any) => oAction.cycle === cycle);
+        const oAction = config.cycleAction.find((oAction: any) => oAction.cycle === cycle);
 
         if (!oAction) return;
 
@@ -88,10 +115,8 @@ export default () => {
 
     $timer.start.on('click', () => ipcRenderer.send('start')); // 타이머 시작 버튼 Click 이벤트
     $timer.stop.on('click', () => ipcRenderer.send('stop')); // 타이머 중지 버튼 Click 이벤트
-    $timer.maxCycle.on('change', () => {
-        setConfig('maxCycle', +$timer.maxCycle.val()); // 설정 저장
-        ipcRenderer.send('createProgressbar'); // 바 재생성
-    });
+    $timer.maxCycle.on('change', () => setConfig('maxCycle', +$timer.maxCycle.val())); // maxCycle 설정 저장
+    $timer.interval.on('change', () => setConfig('interval', +$timer.interval.val())); // interval 설정 저장
 
     require('./Timer.progressbar').default(); // 바 설정 폼 구성
     require('./Timer.shortcut').default(); // 단축키 설정 폼 구성

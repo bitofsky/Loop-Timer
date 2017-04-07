@@ -27,20 +27,23 @@ export const init = (win: Electron.BrowserWindow) => {
 
     // 렌더러 프로세스에서 ipc를 통해 호출할 수 있도록 매핑한다.
     ipcMain.on('reset', reset);
-    ipcMain.on('restart', () => {
-        if (!isActive()) return;
-        stop();
-        start();
-    });
+    ipcMain.on('restart', restart);
     ipcMain.on('start', start);
     ipcMain.on('stop', stop);
     ipcMain.on('getCycle', (e) => e.returnValue = cycle);
     ipcMain.on('getConfig', (e, key) => e.returnValue = getConfig(key)); // getConfig는 편의상 sync로 동작시킨다
-    ipcMain.on('setConfig', (event, key, value) => setConfig(key, value));
+    ipcMain.on('setConfig', (event, key: string, value: any, silent = false) => setConfig(key, value, silent));
     ipcMain.on('createProgressbar', createProgressbar);
 
     initShortcut(); // global 단축키 초기화
 
+};
+
+// Restart Timer
+export const restart = () => {
+    if (!isActive()) return;
+    stop();
+    start();
 };
 
 // Reset cycle
@@ -57,11 +60,14 @@ export const getConfig = (key: string) => {
 };
 
 // Set Config
-export const setConfig = (key: string, value: any) => {
+export const setConfig = (key: string, value: any, silent = false) => {
     const idx = Config.get('presetIdx');
     Config.set(`presets.${idx}.${key}`, value);
-    sendMainWindow('onChangeConfig');
-    key.includes('shortcut') && affectShortcut();
+    if (silent) return;
+    sendMainWindow('onChangeConfig'); // 메인윈도우에 단축키가 수정되었음을 알린다.
+    key.includes('shortcut') && affectShortcut(); // 단축키가 수정되면 글로벌 단축키를 재설정 한다.
+    key.includes('progressbar') && createProgressbar(); // 바 설정이 수정되면 재생성 한다.
+    key.includes('interval') && restart(); // 인터벌이 수정되면 타이머를 재시작 한다.
 };
 
 // Increase Cycle
@@ -128,10 +134,10 @@ const defaults = {
             interval: 4000,
             maxCycle: 4,
             cycleAction: [
-                { cycle: 1, size: 1, style: '#ffff00', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3') },
-                { cycle: 2, size: 1 / 3, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3') },
-                { cycle: 3, size: 2 / 3, style: '#0099ff' },
-                { cycle: 4, size: 3 / 3, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/countdown4to1.mp3') }
+                { cycle: 1, size: 1, style: '#ffff00', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
+                { cycle: 2, size: 1 / 3, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
+                { cycle: 3, size: 2 / 3, style: '#0099ff', volume: 1 },
+                { cycle: 4, size: 3 / 3, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/countdown4to1.mp3'), volume: 1 }
             ]
         },
     ]

@@ -45,20 +45,25 @@
     </fieldset>
 
     <fieldset class="form-group col-xs-24">
-        <legend>Cycle Customize</legend>
-        <div class="col-xs-24">
+        <legend>Timer Customize</legend>
+        <div class="col-xs-12">
+            <label>Cycle Interval (ms)</label>
+            <input type="number" class="form-control" id="interval" min="1000" step="1000" placeholder="Milliseconds" title="Milliseconds">
+        </div>
+        <div class="col-xs-12">
             <label>Max Cycle</label>
             <input type="number" class="form-control" id="maxCycle" min="1" step="1">
         </div>
 
-        <div class="col-xs-24" id="cycleEdit"></div>
         <div class="col-xs-24" id="cycleAdd"></div>
+
+        <div class="col-xs-24" id="cycleEdit"></div>
 
         <div class="modal" id="cycleDialog" tabindex="-1" role="dialog" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content" style="overflow: auto;">
                     <div class="modal-header">
-                        <h4 class="modal-title">Cycle <span id="cycleNumber"></span> Setting</h4>
+                        <h4 class="modal-title">Cycle <span id="cycleNumber"></span> Edit</h4>
                     </div>
 
                     <div class="modal-body col-xs-24">

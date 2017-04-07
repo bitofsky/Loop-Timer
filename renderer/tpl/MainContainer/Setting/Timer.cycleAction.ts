@@ -1,4 +1,4 @@
-const { getConfig, setConfig } = require('./Timer');
+const { getConfig, setConfig, getVolume } = require('./Timer');
 const { ipcRenderer } = require('electron');
 
 const getBackground = (style: string) => {
@@ -36,15 +36,14 @@ export default () => {
         picker: $cycleDialog.find('.progressbar.picker')
     };
 
-    let maxCycle = getConfig('maxCycle');
-    let cycleAction: any[] = getConfig('cycleAction');
+    let config: any;
 
     // 사이클 편집 버튼 구성
     const cycleEditForm = () => {
 
         $cycleEdit.empty();
 
-        cycleAction.forEach(({ cycle }) => // 사이클 편집 버튼
+        config.cycleAction.forEach(({ cycle }: any) => // 사이클 편집 버튼
             $cycleEdit.append(`<div class="col-xs-12"><button type="button" class="btn btn-primary btn-lg cycleEdit" data-cycle="${cycle}">Cycle ${cycle}</button></div>`)
         );
 
@@ -55,12 +54,14 @@ export default () => {
 
         $cycleAdd.empty();
 
+        const { cycleAction, maxCycle } = config;
+
         if (cycleAction.length >= maxCycle) return;
 
         const $cycleList = $('<select class="form-control" style="margin-top: 20px;"><option value="">Add Cycle</option></select>');
         const map = {};
 
-        cycleAction.forEach(({ cycle }) => map[cycle] = true);
+        cycleAction.forEach(({ cycle }: any) => map[cycle] = true);
 
         for (let i = 1; i <= maxCycle; i++)
             !map[i] && $cycleList.append(`<option value="${i}">Cycle ${i}</option>`);
@@ -78,9 +79,9 @@ export default () => {
     const addAction = (cycle: number) => {
 
         // 이미 존재하는 사이클 무시
-        if (cycleAction.find(oAction => oAction.cycle === cycle)) return;
+        if (config.cycleAction.find((oAction: any) => oAction.cycle === cycle)) return;
 
-        cycleAction.push({ cycle, size: 0 });
+        config.cycleAction.push({ cycle, size: 0, volume: 1 });
 
         save();
 
@@ -88,8 +89,8 @@ export default () => {
 
     // cycleAction 저장
     const save = () => {
-        cycleAction.sort((a, b) => a.cycle < b.cycle ? -1 : a.cycle > b.cycle ? 1 : 0);
-        setConfig('cycleAction', cycleAction); // 저장
+        config.cycleAction.sort((a: any, b: any) => a.cycle < b.cycle ? -1 : a.cycle > b.cycle ? 1 : 0);
+        setConfig('cycleAction', config.cycleAction); // 저장
         ipcRenderer.send('restart'); // 타이머 재시작
         $cycleDialog.modal('hide'); // 모달 숨김
     };
@@ -97,14 +98,17 @@ export default () => {
     // 사이클 편집 열기
     $cycleEdit.on('click', '.cycleEdit', ({ target }) => {
 
+        getConfigAll(); // 최신 설정 다시 가져옴
+
         //style = style ? style.replace(/"';/g, '') : ''; // 특문 무시
         const $target = $(target);
         const cycle = $target.data('cycle');
-        const oAction = cycleAction.find(oAction => oAction.cycle === cycle);
+        const oAction = config.cycleAction.find((oAction: any) => oAction.cycle === cycle);
 
         $cycleNumber.text(cycle);
         $sound.path.val(oAction.sound || '');
         $sound.audio.attr('src', (oAction.sound || ''));
+        (<HTMLMediaElement>$sound.audio[0]).volume = +oAction.volume;
         $progressbar.size.val(oAction.size);
         $progressbar.style.val(oAction.style).change();
 
@@ -145,15 +149,16 @@ export default () => {
         (<HTMLMediaElement>$sound.audio[0]).pause(); // 재생중인 사운드가 있다면 멈춤
     });
 
-    // 변경사항 저장
+    // 사이클 편집 사항 저장
     $save.on('click', () => {
 
         const cycle = +$cycleNumber.text();
-        const oAction = cycleAction.find(oAction => oAction.cycle === cycle);
+        const oAction = config.cycleAction.find((oAction: any) => oAction.cycle === cycle);
 
         oAction.sound = $sound.path.val() || '';
         oAction.style = $progressbar.style.val() || '';
         oAction.size = +$progressbar.size.val() || 0;
+        oAction.volume = getVolume($sound.audio[0]);
 
         save();
 
@@ -166,16 +171,18 @@ export default () => {
 
         if (!confirm(`Do you want to delete Cycle ${cycle}?`)) return;
 
-        cycleAction = cycleAction.filter(oAction => oAction.cycle !== cycle);
+        config.cycleAction = config.cycleAction.filter((oAction: any) => oAction.cycle !== cycle);
 
         save();
 
     });
 
+    const getConfigAll = () => {
+        config = getConfig('all');
+    };
+
     const affectConfig = () => { // Config가 변경된 경우 호출하여 객체들에 적용시킴
-        const config = getConfig('all');
-        maxCycle = config.maxCycle;
-        cycleAction = config.cycleAction;
+        getConfigAll();
         cycleEditForm();
         cycleAddForm();
     };

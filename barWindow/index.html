@@ -44,8 +44,7 @@
 
 <body class="draggable">
     <div class="progressbar">
-        <div class="progressbar-value">
-        </div>
+        <div class="progressbar-value"></div>
     </div>
 </body>
 
@@ -85,7 +84,7 @@
         let duration = interval;
         const easing = 'linear';
 
-        $progressValue.clearQueue().stop();
+        $progressValue.clearQueue().finish();
 
         if (transWidth <= currentWidth) { // 목표 게이지가 작거나 리셋된 경우로 판단되면 빠르게 떨어뜨린다.
             $progressValue.animate({ width: 0 }, 500, easing);

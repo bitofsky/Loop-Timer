@@ -34,13 +34,11 @@ export default () => {
             draggable: $progressbar.draggable.prop('checked'),
             transparent: $progressbar.transparent.prop('checked'),
         }));
-        ipcRenderer.send('createProgressbar'); // 바 재생성
     });
 
     $progressbar.reset.on('click', () => { // 바 Reset 버튼
         setConfig('progressbar.x', 0); // 설정 저장
         setConfig('progressbar.y', 0);
-        ipcRenderer.send('createProgressbar'); // 바 재생성
     });
 
 };
