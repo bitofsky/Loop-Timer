@@ -109,6 +109,7 @@ export const changePreset = (type: string, preset?: Preset) => {
 
     }
     else if (type === 'save') { // 프리셋 저장
+        stop();
         setConfig('all', preset);
     }
     else if (type === 'delete') { // 프리셋 삭제
