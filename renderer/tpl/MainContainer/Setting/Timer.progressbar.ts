@@ -6,6 +6,8 @@ const { getConfig, setConfig } = require('./Timer');
 
 export default () => {
 
+    let config: PresetProgressbar;
+
     const $progressbar = { // 바 설정 관련 객체
         form: $('.progressbar'),
         show: $('.progressbar INPUT.show'),
@@ -17,11 +19,11 @@ export default () => {
     };
 
     const affectConfig = () => { // Config가 변경된 경우 호출하여 객체들에 적용시킴
-        const { show, draggable, x, y } = getConfig('progressbar');
-        $progressbar.show.prop('checked', show);
-        $progressbar.draggable.prop('checked', draggable);
-        $progressbar.x.val(+x || '');
-        $progressbar.y.val(+y || '');
+        config = getConfig('progressbar');
+        $progressbar.show.prop('checked', config.show);
+        $progressbar.draggable.prop('checked', config.draggable);
+        $progressbar.x.val(+config.x || '');
+        $progressbar.y.val(+config.y || '');
     };
 
     affectConfig(); // 최초 기본값 설정

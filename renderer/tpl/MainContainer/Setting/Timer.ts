@@ -55,7 +55,7 @@ export default () => {
 
         $cycleAudios.empty();
 
-        config.cycleAction.forEach(({ cycle, sound, volume }: any) => {
+        config.cycleAction.forEach(({ cycle, sound, volume }) => {
             if (!sound) return;
             const $audio = $(`<audio controls preload="none" class="cycleAudio cycle${cycle}" src="${sound}"></audio>`);
             const el = <HTMLMediaElement>$audio[0];
@@ -69,8 +69,8 @@ export default () => {
                 timer && clearTimeout(timer);
                 timer = setTimeout(() => {
                     timer = null;
-                    const oAction = config.cycleAction.find((oAction: any) => oAction.cycle === cycle);
-                    oAction.volume = getVolume(target);
+                    const oAction = config.cycleAction.find(oAction => oAction.cycle === cycle);
+                    oAction && (oAction.volume = getVolume(target));
                     setConfig('cycleAction', config.cycleAction, true); // 볼륨 변경은 저장시 UI를 갱신 하지 않는다.
                 }, 300);
             });
@@ -78,7 +78,7 @@ export default () => {
 
     };
 
-    let config: any;
+    let config: Preset;
 
     getConfigAll();
     affectConfig(); // 최초 기본값 설정
@@ -96,7 +96,7 @@ export default () => {
         if (cycle >= config.maxCycle) ipcRenderer.send('reset');
 
         // 현재 사이클의 동작 확인
-        const oAction = config.cycleAction.find((oAction: any) => oAction.cycle === cycle);
+        const oAction = config.cycleAction.find(oAction => oAction.cycle === cycle);
 
         if (!oAction) return;
 
@@ -118,6 +118,7 @@ export default () => {
     $timer.maxCycle.on('change', () => setConfig('maxCycle', +$timer.maxCycle.val())); // maxCycle 설정 저장
     $timer.interval.on('change', () => setConfig('interval', +$timer.interval.val())); // interval 설정 저장
 
+    require('./Timer.presets').default(); // 프리셋 설정 폼 구성
     require('./Timer.progressbar').default(); // 바 설정 폼 구성
     require('./Timer.shortcut').default(); // 단축키 설정 폼 구성
     require('./Timer.cycleAction').default(); // 사이클 설정 폼 구성

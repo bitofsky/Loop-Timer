@@ -83,12 +83,13 @@
         let currentWidth = Math.ceil($progressValue.width());
         let duration = interval;
         const easing = 'linear';
+        const beforeSize = +$progressValue.data('size') || 0;
 
         $progressValue.clearQueue().finish();
 
-        if (transWidth <= currentWidth) { // 목표 게이지가 작거나 리셋된 경우로 판단되면 빠르게 떨어뜨린다.
-            $progressValue.animate({ width: 0 }, 500, easing);
-            duration -= 500;
+        if (beforeSize >= oAction.size) { // 목표 게이지가 작거나 리셋된 경우로 판단되면 빠르게 떨어뜨린다.
+            $progressValue.animate({ width: 0 }, interval / 10, easing);
+            duration -= interval / 10;
         }
 
         $progressValue.animate({ width: transWidth }, {
@@ -98,6 +99,8 @@
             duration,
             easing
         });
+
+        $progressValue.data('size', oAction.size);
 
     };
 

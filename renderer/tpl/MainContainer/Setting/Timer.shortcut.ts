@@ -27,7 +27,7 @@ const keyList = [
  */
 export default () => {
 
-    const shortcut = getConfig('shortcut');
+    const shortcut: PresetShortcut = getConfig('shortcut');
     const $shortcut = $('.shortcut');
 
     Object.keys(shortcut).forEach(type => { // shortcut Config의 Key로 루프

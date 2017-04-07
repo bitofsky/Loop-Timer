@@ -5,9 +5,9 @@
 import { ipcMain } from 'electron';
 import { initShortcut, affectShortcut } from './timer.shortcut'; // 타이머 단축키
 import { createProgressbar, removeProgressbar, sendProgressbar } from './timer.progressbar'; // 타이머 바
+import * as path from 'path';
 
 const ElectronConfig = require('electron-config');
-const path = require('path');
 
 let mainWindow: Electron.BrowserWindow | null;
 let oIntervalTimer: NodeJS.Timer | null;
@@ -34,6 +34,8 @@ export const init = (win: Electron.BrowserWindow) => {
     ipcMain.on('getConfig', (e, key) => e.returnValue = getConfig(key)); // getConfig는 편의상 sync로 동작시킨다
     ipcMain.on('setConfig', (event, key: string, value: any, silent = false) => setConfig(key, value, silent));
     ipcMain.on('createProgressbar', createProgressbar);
+    ipcMain.on('newPreset', newPreset);
+    ipcMain.on('changeCycleAction', (e, type, value) => changeCycleAction(type, value));
 
     initShortcut(); // global 단축키 초기화
 
@@ -52,22 +54,96 @@ export const reset = () => cycle = 0;
 // Get Config
 export const getConfig = (key: string) => {
 
+    if (Object.keys(defaults).includes(key)) return Config.get(key);
+
     // special config
     if (key === 'colors') return ['#ffff00', '#0099ff', '#ff0000', '#008000', '#d800ff'];
 
+    // get current preset config
     const idx = Config.get('presetIdx');
     return key.toLowerCase() === 'all' ? Config.get(`presets.${idx}`) : Config.get(`presets.${idx}.${key}`);
 };
 
 // Set Config
 export const setConfig = (key: string, value: any, silent = false) => {
-    const idx = Config.get('presetIdx');
-    Config.set(`presets.${idx}.${key}`, value);
+
+    if (Object.keys(defaults).includes(key)) {
+        Config.set(key, value);
+    }
+    else { // set current preset config
+        const idx = Config.get('presetIdx');
+
+        if (key === 'cycleAction')
+            value.sort((a: PresetCycleAction, b: PresetCycleAction) => a.cycle < b.cycle ? -1 : a.cycle > b.cycle ? 1 : 0);
+
+        Config.set(`presets.${idx}.${key}`, value);
+    }
+
     if (silent) return;
+
     sendMainWindow('onChangeConfig'); // 메인윈도우에 단축키가 수정되었음을 알린다.
+    key.includes('preset') && restart(); // 프리셋이 수정되면 타이머를 재시작 한다.
     key.includes('shortcut') && affectShortcut(); // 단축키가 수정되면 글로벌 단축키를 재설정 한다.
     key.includes('progressbar') && createProgressbar(); // 바 설정이 수정되면 재생성 한다.
     key.includes('interval') && restart(); // 인터벌이 수정되면 타이머를 재시작 한다.
+};
+
+// 새 프리셋 생성
+export const newPreset = () => {
+
+    const preset: Preset = {
+        name: 'New Preset',
+        interval: 1000,
+        shortcut: {
+            start: {
+                prefix: 'CmdOrCtrl',
+                key: '1'
+            },
+            stop: {
+                prefix: 'CmdOrCtrl',
+                key: '2'
+            }
+        },
+        cycleAction: [],
+        maxCycle: 1,
+        progressbar: {
+            show: true,
+            draggable: true,
+            transparent: true,
+            x: 0,
+            y: 0
+        }
+    };
+
+    const presets = getConfig('presets');
+    const presetIdx = presets.length;
+
+    presets.push(preset);
+
+    setConfig('presets', presets);
+    setConfig('presetIdx', presetIdx);
+
+};
+
+// 사이클 액션 변경
+export const changeCycleAction = (type: string, cycleAction?: PresetCycleAction | number) => {
+
+    let cycleActionList: PresetCycleAction[] = getConfig('cycleAction');
+
+    if (type === 'new') { // 액션 추가
+        if (cycleActionList.find((oAction) => oAction.cycle === cycleAction))
+            return; // 이미 존재하는 사이클 무시
+        cycleActionList.push({ cycle: <number>cycleAction, size: 0, volume: 1, style: '' });
+    }
+    else if (type === 'save') { // 액션 저장
+        const { cycle } = <PresetCycleAction>cycleAction;
+        Object.assign(cycleActionList.find(oAction => oAction.cycle === cycle), cycleAction);
+    }
+    else if (type === 'delete') // 액션 삭제
+        cycleActionList = cycleActionList.filter(oAction => oAction.cycle !== cycleAction);
+
+    setConfig('cycleAction', cycleActionList);
+
 };
 
 // Increase Cycle
@@ -109,11 +185,11 @@ export const isActive = () => !!oIntervalTimer;
 export const ShortcutEvents = { start, stop };
 
 // Default Config
-const defaults = {
+const defaults: Config = {
     presetIdx: 0,
     presets: [
         {
-            name: 'Diablo3 CoE : 4 Elements',
+            name: '4 Elements : Diablo3 CoE',
             progressbar: {
                 show: true,
                 draggable: true,
@@ -138,6 +214,35 @@ const defaults = {
                 { cycle: 2, size: 1 / 3, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
                 { cycle: 3, size: 2 / 3, style: '#0099ff', volume: 1 },
                 { cycle: 4, size: 3 / 3, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/countdown4to1.mp3'), volume: 1 }
+            ]
+        },
+        {
+            name: '5 Elements : Diablo3 CoE',
+            progressbar: {
+                show: true,
+                draggable: true,
+                transparent: true,
+                x: 0,
+                y: 0
+            },
+            shortcut: {
+                start: {
+                    prefix: 'CmdOrCtrl',
+                    key: '1'
+                },
+                stop: {
+                    prefix: 'CmdOrCtrl',
+                    key: '2'
+                }
+            },
+            interval: 4000,
+            maxCycle: 5,
+            cycleAction: [
+                { cycle: 1, size: 1, style: '#ffff00', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
+                { cycle: 2, size: 1 / 4, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
+                { cycle: 3, size: 2 / 4, style: '#0099ff', volume: 1 },
+                { cycle: 4, size: 3 / 4, style: '#0099ff', volume: 1 },
+                { cycle: 5, size: 4 / 4, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/countdown4to1.mp3'), volume: 1 }
             ]
         },
     ]
