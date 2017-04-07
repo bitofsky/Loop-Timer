@@ -71,7 +71,11 @@ export default () => {
 
     // 새 프리셋 추가
     const onNew = () => ipcRenderer.send('changePreset', 'new');
-    const onDelete = () => ipcRenderer.send('changePreset', 'delete');
+    const onDelete = () => {
+        const config = getConfig('all');
+        if (!confirm(`Do you want to delete this preset?\n\n${config.name}`)) return;
+        ipcRenderer.send('changePreset', 'delete');
+    };
 
     drawPresetSelect();
 
