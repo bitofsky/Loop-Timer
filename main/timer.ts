@@ -83,7 +83,7 @@ export const setConfig = (key: string, value: any, silent = false) => {
 
     if (silent) return;
 
-    sendMainWindow('onChangeConfig'); // 메인윈도우에 단축키가 수정되었음을 알린다.
+    sendMainWindow('onChangeConfig', key); // 메인윈도우에 단축키가 수정되었음을 알린다.
     key.includes('preset') && restart(); // 프리셋이 수정되면 타이머를 재시작 한다.
     key.includes('shortcut') && affectShortcut(); // 단축키가 수정되면 글로벌 단축키를 재설정 한다.
     key.includes('progressbar') && createProgressbar(); // 바 설정이 수정되면 재생성 한다.

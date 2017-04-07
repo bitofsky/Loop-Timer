@@ -4,7 +4,7 @@
 import { BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import { getConfig, setConfig, isActive } from './timer';
+import { getConfig, setConfig, isActive, sendMainWindow } from './timer';
 import { isDev } from './createWindow';
 
 let barWindow: Electron.BrowserWindow | null;
@@ -66,8 +66,9 @@ export const createProgressbar = () => {
         moveTimer = setTimeout(() => { // 새 타이머 예약
             if (!barWindow) return;
             const p = barWindow.getPosition();
-            setConfig('progressbar.x', p[0]); // config에 저장
-            setConfig('progressbar.y', p[1]);
+            setConfig('progressbar.x', p[0], true); // config에 저장
+            setConfig('progressbar.y', p[1], true);
+            sendMainWindow('onChangeProgressbarPosition', ...p);
             moveTimer = null; // 타이머 제거
         }, 300);
     });
