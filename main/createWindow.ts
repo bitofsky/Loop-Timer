@@ -7,7 +7,7 @@ import * as url from 'url';
 import { init } from './timer';
 
 // 개발 모드 체크
-const isDev = process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath);
+export const isDev = process.defaultApp || /[\\/]electron-prebuilt[\\/]/.test(process.execPath) || /[\\/]electron[\\/]/.test(process.execPath);
 
 let win: Electron.BrowserWindow | null;
 

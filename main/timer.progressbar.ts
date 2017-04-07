@@ -5,6 +5,7 @@ import { BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import { getConfig, setConfig, isActive } from './timer';
+import { isDev } from './createWindow';
 
 let barWindow: Electron.BrowserWindow | null;
 
@@ -71,7 +72,7 @@ export const createProgressbar = () => {
         }, 300);
     });
 
-    barWindow.webContents.openDevTools();
+    isDev && barWindow.webContents.openDevTools();
 
 };
 
