@@ -34,7 +34,7 @@ export const init = (win: Electron.BrowserWindow) => {
     ipcMain.on('getConfig', (e, key) => e.returnValue = getConfig(key)); // getConfig는 편의상 sync로 동작시킨다
     ipcMain.on('setConfig', (event, key: string, value: any, silent = false) => setConfig(key, value, silent));
     ipcMain.on('createProgressbar', createProgressbar);
-    ipcMain.on('newPreset', newPreset);
+    ipcMain.on('changePreset', (e, type, value) => changePreset(type, value));
     ipcMain.on('changeCycleAction', (e, type, value) => changeCycleAction(type, value));
 
     initShortcut(); // global 단축키 초기화
@@ -70,12 +70,14 @@ export const setConfig = (key: string, value: any, silent = false) => {
     if (Object.keys(defaults).includes(key)) {
         Config.set(key, value);
     }
-    else { // set current preset config
+    else if (key === 'all') { // set current preset all
         const idx = Config.get('presetIdx');
-
+        Config.set(`presets.${idx}`, value);
+    }
+    else { // set current preset keys
+        const idx = Config.get('presetIdx');
         if (key === 'cycleAction')
             value.sort((a: PresetCycleAction, b: PresetCycleAction) => a.cycle < b.cycle ? -1 : a.cycle > b.cycle ? 1 : 0);
-
         Config.set(`presets.${idx}.${key}`, value);
     }
 
@@ -88,40 +90,41 @@ export const setConfig = (key: string, value: any, silent = false) => {
     key.includes('interval') && restart(); // 인터벌이 수정되면 타이머를 재시작 한다.
 };
 
-// 새 프리셋 생성
-export const newPreset = () => {
-
-    const preset: Preset = {
-        name: 'New Preset',
-        interval: 1000,
-        shortcut: {
-            start: {
-                prefix: 'CmdOrCtrl',
-                key: '1'
-            },
-            stop: {
-                prefix: 'CmdOrCtrl',
-                key: '2'
-            }
-        },
-        cycleAction: [],
-        maxCycle: 1,
-        progressbar: {
-            show: true,
-            draggable: true,
-            transparent: true,
-            x: 0,
-            y: 0
-        }
-    };
+// 프리셋 변경
+export const changePreset = (type: string, preset?: Preset) => {
 
     const presets = getConfig('presets');
-    const presetIdx = presets.length;
 
-    presets.push(preset);
+    if (type === 'new') { // 프리셋 추가
 
-    setConfig('presets', presets);
-    setConfig('presetIdx', presetIdx);
+        stop();
+
+        // 새 프리셋을 바로 열리게 한다
+        const presetIdx = presets.length;
+
+        presets.push(NewPreset);
+
+        setConfig('presets', presets);
+        setConfig('presetIdx', presetIdx);
+
+    }
+    else if (type === 'save') { // 프리셋 저장
+        setConfig('all', preset);
+    }
+    else if (type === 'delete') { // 프리셋 삭제
+
+        stop();
+
+        const presetIdx = getConfig('presetIdx');
+
+        presets.splice(presetIdx, 1);
+
+        setConfig('presets', presets);
+        setConfig('presetIdx', 0);
+
+        initPresets(); // 프리셋이 모두 삭제된 경우 초기화
+
+    }
 
 };
 
@@ -183,6 +186,33 @@ export const isActive = () => !!oIntervalTimer;
 
 // 키보드 단축키로 제공할 함수. 반드시 Config.get('shortcut')의 키들과 일치해야 한다.
 export const ShortcutEvents = { start, stop };
+
+// Preset이 없으면 빈 Preset 설정
+const initPresets = () => !Config.get('presets').length && Config.set('presets', [NewPreset]);
+
+const NewPreset: Preset = {
+    name: 'New Preset',
+    interval: 1000,
+    shortcut: {
+        start: {
+            prefix: 'CmdOrCtrl',
+            key: '1'
+        },
+        stop: {
+            prefix: 'CmdOrCtrl',
+            key: '2'
+        }
+    },
+    cycleAction: [],
+    maxCycle: 1,
+    progressbar: {
+        show: true,
+        draggable: true,
+        transparent: true,
+        x: 0,
+        y: 0
+    }
+};
 
 // Default Config
 const defaults: Config = {
@@ -250,6 +280,8 @@ const defaults: Config = {
 
 // Config 초기화
 export const Config = new ElectronConfig({ defaults });
+
+initPresets();
 
 // 추가된 config 셋팅은 아래와 같은 형태로 셀프 추가 해야, 기존 버전 config가 함께 mix 된다.
 // !Config.get('shortcut.pause') && Config.set('shortcut.pause', defaults.shortcut.pause);
