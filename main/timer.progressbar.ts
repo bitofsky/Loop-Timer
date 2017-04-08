@@ -4,7 +4,8 @@
 import { BrowserWindow } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
-import { getConfig, setConfig, isActive } from './timer';
+import { getConfig, setConfig, isActive, sendMainWindow } from './timer';
+import { isDev } from './createWindow';
 
 let barWindow: Electron.BrowserWindow | null;
 
@@ -21,14 +22,15 @@ export const createProgressbar = () => {
 
     const conf = getConfig('progressbar'); // 바 윈도우 Config
 
-    if (!isActive()) return; // 타이머가 미동작 중이면 생성하지 않음
-    if (!conf.show) return; // 보임 설정이 아니면 생성하지 않음
+    // 타이머가 미동작 중이면 생성하지 않음
+    // 보임 설정이 아니면 생성하지 않음
+    if (!isActive() || !conf.show) return;
 
     const option: Electron.BrowserWindowOptions = {
-        width: 38, height: 38,
+        width: 38 + (conf.transparent ? 10 : 0), height: 38,
         center: true,
         resizable: false,
-        transparent: true,
+        transparent: !!conf.transparent,
         frame: false, alwaysOnTop: true, maximizable: false, minimizable: false, hasShadow: false, skipTaskbar: true, focusable: false
     };
 
@@ -64,13 +66,14 @@ export const createProgressbar = () => {
         moveTimer = setTimeout(() => { // 새 타이머 예약
             if (!barWindow) return;
             const p = barWindow.getPosition();
-            setConfig('progressbar.x', p[0]); // config에 저장
-            setConfig('progressbar.y', p[1]);
+            setConfig('progressbar.x', p[0], true); // config에 저장
+            setConfig('progressbar.y', p[1], true);
+            sendMainWindow('onChangeProgressbarPosition', ...p);
             moveTimer = null; // 타이머 제거
         }, 300);
     });
 
-    //barWindow.webContents.openDevTools();
+    isDev && barWindow.webContents.openDevTools();
 
 };
 

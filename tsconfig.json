@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "es2016", // for electron 1.5.x
+        "target": "es2017",
         "module": "none",
         "moduleResolution": "node",
         "sourceMap": true,
