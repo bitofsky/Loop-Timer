@@ -241,10 +241,10 @@ const defaults: Config = {
             interval: 4000,
             maxCycle: 4,
             cycleAction: [
-                { cycle: 1, size: 1, style: '#ffff00', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
-                { cycle: 2, size: 1 / 3, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
+                { cycle: 1, size: 1, style: '#ffff00', sound: './ding.mp3', volume: 1 },
+                { cycle: 2, size: 1 / 3, style: '#0099ff', sound: './ding.mp3', volume: 1 },
                 { cycle: 3, size: 2 / 3, style: '#0099ff', volume: 1 },
-                { cycle: 4, size: 3 / 3, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/countdown4to1.mp3'), volume: 1 }
+                { cycle: 4, size: 3 / 3, style: '#0099ff', sound: './countdown4to1.mp3', volume: 1 }
             ]
         },
         {
@@ -269,11 +269,11 @@ const defaults: Config = {
             interval: 4000,
             maxCycle: 5,
             cycleAction: [
-                { cycle: 1, size: 1, style: '#ffff00', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
-                { cycle: 2, size: 1 / 4, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
+                { cycle: 1, size: 1, style: '#ffff00', sound: './ding.mp3', volume: 1 },
+                { cycle: 2, size: 1 / 4, style: '#0099ff', sound: './ding.mp3', volume: 1 },
                 { cycle: 3, size: 2 / 4, style: '#0099ff', volume: 1 },
                 { cycle: 4, size: 3 / 4, style: '#0099ff', volume: 1 },
-                { cycle: 5, size: 4 / 4, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/countdown4to1.mp3'), volume: 1 }
+                { cycle: 5, size: 4 / 4, style: '#0099ff', sound: './countdown4to1.mp3', volume: 1 }
             ]
         },
         {
@@ -298,16 +298,16 @@ const defaults: Config = {
             interval: 4000,
             maxCycle: 3,
             cycleAction: [
-                { cycle: 1, size: 1, style: '#ffff00', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
-                { cycle: 2, size: 1 / 2, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
-                { cycle: 3, size: 2 / 2, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/countdown4to1.mp3'), volume: 1 }
+                { cycle: 1, size: 1, style: '#ffff00', sound: './ding.mp3', volume: 1 },
+                { cycle: 2, size: 1 / 2, style: '#0099ff', sound: './ding.mp3', volume: 1 },
+                { cycle: 3, size: 2 / 2, style: '#0099ff', sound: './countdown4to1.mp3', volume: 1 }
             ]
         },
     ]
 };
 
 // Config 초기화
-export const Config = new ElectronConfig({ defaults });
+export const Config = new ElectronConfig({ defaults, name: `config.${require('../package.json').version}` });
 
 initPresets();
 

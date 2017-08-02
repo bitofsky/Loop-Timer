@@ -21,11 +21,13 @@ interface Menu {
  */
 interface Window {
     Root: string;
+    SoundRoot: string;
     initBody(): void;
 }
 
 declare var window: Window;
 declare const Root: string;
+declare const SoundRoot: string;
 declare const Package: string;
 
 /**

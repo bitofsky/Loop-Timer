@@ -1,5 +1,6 @@
 const { getConfig, setConfig, getVolume } = require('./Timer');
 const { ipcRenderer } = require('electron');
+const Path = require('path');
 
 const getBackground = (style: string) => {
     style = style ? style.replace(/["'\(\);-_/\\]/g, '') : ''; // 특문 무시
@@ -95,7 +96,7 @@ export default () => {
 
         $cycleNumber.text(cycle);
         $sound.path.val(oAction.sound || '');
-        $sound.audio.attr('src', (oAction.sound || ''));
+        $sound.audio.attr('src', getSoundPath((oAction.sound || '')));
         (<HTMLMediaElement>$sound.audio[0]).volume = +oAction.volume;
         $progressbar.size.val(oAction.size);
         $progressbar.style.val(oAction.style).change();
@@ -121,14 +122,24 @@ export default () => {
         $progressbar.style.val($progressbar.picker.val()).change();
     });
 
+    const getSoundPath = (path: string) => {
+        if (path.indexOf('./') === 0) path = Path.resolve(SoundRoot, path);
+        return path;
+    };
+
+    const getRelationPath = (path: string) => {
+        if (path.indexOf(SoundRoot) === 0) path = path.replace(SoundRoot + '\\', './');
+        return path;
+    }
+
     // 사운드 파일 선택
     $sound.find.on('click', () => {
         const { dialog } = require('electron').remote;
-        const defaultPath = $sound.path.val();
+        let defaultPath = getSoundPath($sound.path.val());
         const filters = [{ name: 'MP3', extensions: ['mp3'] }];
         const files = dialog.showOpenDialog({ defaultPath, filters, properties: ['openFile'] });
-        const sound = files ? files[0] : '';
-        $sound.path.val(sound);
+        let sound = files ? files[0] : '';
+        $sound.path.val(getRelationPath(sound));
         $sound.audio.attr('src', sound);
     });
 

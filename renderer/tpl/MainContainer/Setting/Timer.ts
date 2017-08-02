@@ -57,6 +57,7 @@ export default () => {
 
         config.cycleAction.forEach(({ cycle, sound, volume }) => {
             if (!sound) return;
+            if (sound && sound.indexOf('./') === 0) sound = require('path').resolve(SoundRoot, sound);
             const $audio = $(`<audio controls preload="none" class="cycleAudio cycle${cycle}" src="${sound}"></audio>`);
             const el = <HTMLMediaElement>$audio[0];
             el.volume = volume;
