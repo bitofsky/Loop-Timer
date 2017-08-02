@@ -276,6 +276,33 @@ const defaults: Config = {
                 { cycle: 5, size: 4 / 4, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/countdown4to1.mp3'), volume: 1 }
             ]
         },
+        {
+            name: '3 Elements : Diablo3 CoE',
+            progressbar: {
+                show: true,
+                draggable: true,
+                transparent: true,
+                x: 0,
+                y: 0
+            },
+            shortcut: {
+                start: {
+                    prefix: 'CmdOrCtrl',
+                    key: '1'
+                },
+                stop: {
+                    prefix: 'CmdOrCtrl',
+                    key: '2'
+                }
+            },
+            interval: 4000,
+            maxCycle: 3,
+            cycleAction: [
+                { cycle: 1, size: 1, style: '#ffff00', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
+                { cycle: 2, size: 1 / 2, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/ding.mp3'), volume: 1 },
+                { cycle: 3, size: 2 / 2, style: '#0099ff', sound: path.resolve(__dirname, '../renderer/sound/countdown4to1.mp3'), volume: 1 }
+            ]
+        },
     ]
 };
 
