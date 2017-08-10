@@ -26,7 +26,7 @@ export const createProgressbar = () => {
     // 보임 설정이 아니면 생성하지 않음
     if (!isActive() || !conf.show) return;
 
-    const option: Electron.BrowserWindowOptions = {
+    const option: Electron.BrowserWindowConstructorOptions = {
         width: 38 + (conf.transparent ? 10 : 0), height: 38,
         center: true,
         resizable: false,

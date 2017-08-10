@@ -30,12 +30,12 @@ export const init = (win: Electron.BrowserWindow) => {
     ipcMain.on('restart', restart);
     ipcMain.on('start', start);
     ipcMain.on('stop', stop);
-    ipcMain.on('getCycle', (e) => e.returnValue = cycle);
-    ipcMain.on('getConfig', (e, key) => e.returnValue = getConfig(key)); // getConfig는 편의상 sync로 동작시킨다
-    ipcMain.on('setConfig', (event, key: string, value: any, silent = false) => setConfig(key, value, silent));
+    ipcMain.on('getCycle', (e: Electron.Event) => e.returnValue = cycle);
+    ipcMain.on('getConfig', (e: Electron.Event, key: string) => e.returnValue = getConfig(key)); // getConfig는 편의상 sync로 동작시킨다
+    ipcMain.on('setConfig', (event: Electron.Event, key: string, value: any, silent = false) => setConfig(key, value, silent));
     ipcMain.on('createProgressbar', createProgressbar);
-    ipcMain.on('changePreset', (e, type, value) => changePreset(type, value));
-    ipcMain.on('changeCycleAction', (e, type, value) => changeCycleAction(type, value));
+    ipcMain.on('changePreset', (e: Electron.Event, type: string, value?: Preset) => changePreset(type, value));
+    ipcMain.on('changeCycleAction', (e: Electron.Event, type: string, value?: PresetCycleAction | number) => changeCycleAction(type, value));
 
     initShortcut(); // global 단축키 초기화
 

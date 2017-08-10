@@ -89,7 +89,7 @@ export default () => {
 
     // Cycle Update 수신
     ipcRenderer.removeAllListeners('timerNotify');
-    ipcRenderer.on('timerNotify', (event, cycle) => {
+    ipcRenderer.on('timerNotify', (event: Electron.Event, cycle: number) => {
 
         $timer.notify.text(cycle);
 

@@ -25,6 +25,11 @@ interface Window {
     initBody(): void;
 }
 
+interface JQuery {
+    tooltip(...args): JQuery;
+    modal(...args): JQuery;
+}
+
 declare var window: Window;
 declare const Root: string;
 declare const SoundRoot: string;

@@ -29,7 +29,7 @@ export default () => {
     affectConfig(); // 최초 기본값 설정
 
     ipcRenderer.on('onChangeConfig', affectConfig); // 메인 프로세스에서 Config 변경시 affectConfig 실행
-    ipcRenderer.on('onChangeProgressbarPosition', (event, x, y) => {
+    ipcRenderer.on('onChangeProgressbarPosition', (event: Electron.Event, x: number, y: number) => {
         $progressbar.x.val(+x || '');
         $progressbar.y.val(+y || '');
     });

@@ -60,7 +60,7 @@ export const task = (enableElectron: boolean, enableWatch: boolean) => new Promi
 
         if (enableElectron) {
             const args = ['--nolazy'];
-            enableWatch && args.push('--debug-brk', '--debug=5858');
+            enableWatch && args.push('--debug-brk', '--inspect=5858');
             const oSpawn = spawn('node', ['./node_modules/electron/cli.js', ...args, 'run.js'], { stdio: 'inherit' });
             oSpawn.on('close', () => resolve());
         }

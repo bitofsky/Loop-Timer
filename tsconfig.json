@@ -11,6 +11,7 @@
         "alwaysStrict": true,
         "strictNullChecks": true,
         "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
         "lib": [
             "dom",
             "es2017"
@@ -20,9 +21,7 @@
         "removeComments": false,
         "baseUrl": ".",
         "paths": {
-            "ajst": [
-                "./node_modules/ajst/ajst.ts"
-            ]
+            //"ajst": ["./node_modules/ajst/ajst.ts"]
         }
     },
     "exclude": [
