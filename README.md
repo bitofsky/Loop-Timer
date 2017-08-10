@@ -10,5 +10,8 @@ Timer App for Diablo3 - Convention of elements
 ## Author
 - bitofsky@naver.com (Bum-seok Hwang)
 
+## Contributing
+- [Contribute Guide](https://github.com/bitofsky/Loop-Timer/blob/master/CONTRIBUTING.md)
+
 ## License
 - GPL-3.0
