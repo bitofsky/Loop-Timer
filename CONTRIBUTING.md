@@ -16,6 +16,7 @@ git clone https://github.com/bitofsky/Loop-Timer.git
 cd Loop-Timer
 npm install
 ```
+정상적으로 설치되었다면 npm install 후 바로 VSCode가 실행될 것입니다.
 
 ### 3. 소스 컴파일 및 실행
 VSCode에서 F5를 눌러 런쳐를 구동시키면 동작합니다.
