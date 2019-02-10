@@ -42,6 +42,9 @@ export const createProgressbar = () => {
     // Create the renderer window.
     barWindow = new BrowserWindow(option);
 
+    if (conf.transparent)
+        barWindow.setIgnoreMouseEvents(true);
+
     // and load the index.html of the app.
     barWindow.loadURL(url.format({
         pathname: path.join(__dirname, '../barWindow/index.html'),
