@@ -55,7 +55,6 @@ interface Preset {
 interface PresetProgressbar {
     show: boolean,
     draggable: boolean,
-    transparent: boolean,
     x: number,
     y: number
 }

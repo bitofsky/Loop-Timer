@@ -27,10 +27,10 @@ export const createProgressbar = () => {
     if (!isActive() || !conf.show) return;
 
     const option: Electron.BrowserWindowConstructorOptions = {
-        width: 38 + (conf.transparent ? 10 : 0), height: 38,
+        width: 48, height: 19,
         center: true,
         resizable: false,
-        transparent: !!conf.transparent,
+        transparent: true,
         frame: false, alwaysOnTop: true, maximizable: false, minimizable: false, hasShadow: false, skipTaskbar: true, focusable: false
     };
 
@@ -42,7 +42,7 @@ export const createProgressbar = () => {
     // Create the renderer window.
     barWindow = new BrowserWindow(option);
 
-    if (conf.transparent)
+    if (!conf.draggable)
         barWindow.setIgnoreMouseEvents(true);
 
     // and load the index.html of the app.

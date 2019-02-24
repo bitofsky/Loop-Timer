@@ -12,7 +12,6 @@ export default () => {
         form: $('.progressbar'),
         show: $('.progressbar INPUT.show'),
         draggable: $('.progressbar INPUT.draggable'),
-        transparent: $('.progressbar INPUT.transparent'),
         x: $('.progressbar INPUT.x'),
         y: $('.progressbar INPUT.y'),
         reset: $('.progressbar SPAN.reset'),
@@ -38,7 +37,6 @@ export default () => {
         setConfig('progressbar', Object.assign(getConfig('progressbar'), {
             show: $progressbar.show.prop('checked'),
             draggable: $progressbar.draggable.prop('checked'),
-            transparent: $progressbar.transparent.prop('checked'),
         }));
     });
 

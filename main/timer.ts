@@ -209,7 +209,6 @@ const NewPreset: Preset = {
     progressbar: {
         show: true,
         draggable: true,
-        transparent: true,
         x: 0,
         y: 0
     }
@@ -224,7 +223,6 @@ const defaults: Config = {
             progressbar: {
                 show: true,
                 draggable: true,
-                transparent: true,
                 x: 0,
                 y: 0
             },
@@ -252,7 +250,6 @@ const defaults: Config = {
             progressbar: {
                 show: true,
                 draggable: true,
-                transparent: true,
                 x: 0,
                 y: 0
             },
@@ -281,7 +278,6 @@ const defaults: Config = {
             progressbar: {
                 show: true,
                 draggable: true,
-                transparent: true,
                 x: 0,
                 y: 0
             },

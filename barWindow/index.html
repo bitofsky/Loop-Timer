@@ -17,13 +17,13 @@
         body {
             background: rgba(0, 0, 0, 0);
         }
-        
+
         BODY {
             margin: 0;
             padding: 0;
             overflow: hidden;
         }
-        
+
         .progressbar {
             /* Reset the default appearance */
             -webkit-appearance: none;
@@ -34,7 +34,7 @@
             background-color: rgba(235, 235, 235, 1);
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;
         }
-        
+
         .progressbar .progressbar-value {
             background-size: 35px 20px, 100% 100%, 100% 100%;
         }
@@ -64,10 +64,7 @@
 
     const width = $window.width();
     let height = $window.height();
-
-    if (progressbar.transparent && !progressbar.draggable) // 투명 모드이고 드래그가 꺼지면 절반 사이즈로 변경
-        height /= 2;
-
+    
     $body.css('-webkit-app-region', progressbar.draggable ? 'drag' : 'no-drag');
     $progress.css({ width, height });
     $progressValue.css({ width: 0, height });
